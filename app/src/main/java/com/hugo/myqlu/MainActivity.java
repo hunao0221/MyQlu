@@ -1,6 +1,7 @@
 package com.hugo.myqlu;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -20,27 +21,30 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.hugo.myqlu.activity.SearchCjActivity;
+import com.hugo.myqlu.utils.HtmlUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.BitmapCallback;
 import com.zhy.http.okhttp.callback.StringCallback;
 
-import java.io.IOException;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import okhttp3.Call;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    String codeUri = "http://210.44.159.4/CheckCode.aspx";
-    String loginUri = "http://210.44.159.4/default2.aspx";
-    ////xscj.aspx?xh=201311011011&xm=胡洪源&gnmkdm=N121605
+    private String mainUrl = "http://210.44.159.4";
+    private String codeUrl = "http://210.44.159.4/CheckCode.aspx";
+    private String loginUrl = "http://210.44.159.4/default2.aspx";
+    private String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
+    //xscj.aspx?xh=201311011011&xm=胡洪源&gnmkdm=N121605
+    String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
+    String kscxUrl = "http://210.44.159.4/xskscx.aspx?xh=stuxh&xm=stuname%90&gnmkdm=N121604";
+    String kbcxUrl = "http://210.44.159.4/xskbcx.aspx?xh=stuxh&xm=stuname&gnmkdm=N121603";
+    String VIEWSTATE = "dDwtNjI5MTUzMDY1O3Q8O2w8aTwxPjs+O2w8dDw7bDxpPDE+O2k8MTU+O2k8MTc+O2k8MjM+O2k8MjU+O2k8Mjc+O2k8Mjk+O2k8MzA+O2k8MzI+O2k8MzQ+O2k8MzY+O2k8NDY+O2k8NTA+Oz47bDx0PHQ8O3Q8aTwxNz47QDxcZTsyMDAxLTIwMDI7MjAwMi0yMDAzOzIwMDMtMjAwNDsyMDA0LTIwMDU7MjAwNS0yMDA2OzIwMDYtMjAwNzsyMDA3LTIwMDg7MjAwOC0yMDA5OzIwMDktMjAxMDsyMDEwLTIwMTE7MjAxMS0yMDEyOzIwMTItMjAxMzsyMDEzLTIwMTQ7MjAxNC0yMDE1OzIwMTUtMjAxNjsyMDE2LTIwMTc7PjtAPFxlOzIwMDEtMjAwMjsyMDAyLTIwMDM7MjAwMy0yMDA0OzIwMDQtMjAwNTsyMDA1LTIwMDY7MjAwNi0yMDA3OzIwMDctMjAwODsyMDA4LTIwMDk7MjAwOS0yMDEwOzIwMTAtMjAxMTsyMDExLTIwMTI7MjAxMi0yMDEzOzIwMTMtMjAxNDsyMDE0LTIwMTU7MjAxNS0yMDE2OzIwMTYtMjAxNzs+Pjs+Ozs+O3Q8cDw7cDxsPG9uY2xpY2s7PjtsPHByZXZpZXcoKVw7Oz4+Pjs7Pjt0PHA8O3A8bDxvbmNsaWNrOz47bDx3aW5kb3cuY2xvc2UoKVw7Oz4+Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOWtpuWPt++8mjIwMTMxMTAxMTAxMTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w85aeT5ZCN77ya6IOh5rSq5rqQOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDzlrabpmaLvvJrnkIblrabpmaI7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOS4k+S4mu+8mjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w85L+h5oGv5LiO6K6h566X56eR5a2mOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDzooYzmlL/nj63vvJrkv6HorqExMy0xOz4+Oz47Oz47dDxAMDw7Ozs7Ozs7Ozs7Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8U0RJTEk7Pj47Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs+Ozs+Oz4+Oz4+Oz4gupjjgeaqDTeBZAvvjfAD7Ze0rw==";
 
-    String chengjiUri = "http://210.44.159.4/xscj.aspx?xh=201311011011&xm=%BA%FA%BA%E9%D4%B4&gnmkdm=N121605";
-    String chengjitou = "dDwtNjI5MTUzMDY1O3Q8O2w8aTwxPjs%2BO2w8dDw7bDxpPDE%2BO2k8MTU%2BO2k8MTc%2BO2k8MjM%2BO2k8MjU%2BO2k8Mjc%2BO2k8Mjk%2BO2k8MzA%2BO2k8MzI%2BO2k8MzQ%2BO2k8MzY%2BO2k8NDY%2BO2k8NTA%2BOz47bDx0PHQ8O3Q8aTwxNz47QDxcZTsyMDAxLTIwMDI7MjAwMi0yMDAzOzIwMDMtMjAwNDsyMDA0LTIwMDU7MjAwNS0yMDA2OzIwMDYtMjAwNzsyMDA3LTIwMDg7MjAwOC0yMDA5OzIwMDktMjAxMDsyMDEwLTIwMTE7MjAxMS0yMDEyOzIwMTItMjAxMzsyMDEzLTIwMTQ7MjAxNC0yMDE1OzIwMTUtMjAxNjsyMDE2LTIwMTc7PjtAPFxlOzIwMDEtMjAwMjsyMDAyLTIwMDM7MjAwMy0yMDA0OzIwMDQtMjAwNTsyMDA1LTIwMDY7MjAwNi0yMDA3OzIwMDctMjAwODsyMDA4LTIwMDk7MjAwOS0yMDEwOzIwMTAtMjAxMTsyMDExLTIwMTI7MjAxMi0yMDEzOzIwMTMtMjAxNDsyMDE0LTIwMTU7MjAxNS0yMDE2OzIwMTYtMjAxNzs%2BPjs%2BOzs%2BO3Q8cDw7cDxsPG9uY2xpY2s7PjtsPHByZXZpZXcoKVw7Oz4%2BPjs7Pjt0PHA8O3A8bDxvbmNsaWNrOz47bDx3aW5kb3cuY2xvc2UoKVw7Oz4%2BPjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOWtpuWPt%2B%2B8mjIwMTMxMTAxMTAxMTs%2BPjs%2BOzs%2BO3Q8cDxwPGw8VGV4dDs%2BO2w85aeT5ZCN77ya6IOh5rSq5rqQOz4%2BOz47Oz47dDxwPHA8bDxUZXh0Oz47bDzlrabpmaLvvJrnkIblrabpmaI7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOS4k%2BS4mu%2B8mjs%2BPjs%2BOzs%2BO3Q8cDxwPGw8VGV4dDs%2BO2w85L%2Bh5oGv5LiO6K6h566X56eR5a2mOz4%2BOz47Oz47dDxwPHA8bDxUZXh0Oz47bDzooYzmlL%2Fnj63vvJrkv6HorqExMy0xOz4%2BOz47Oz47dDxAMDw7Ozs7Ozs7Ozs7Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs%2BOzs%2BO3Q8cDxwPGw8VGV4dDs%2BO2w8U0RJTEk7Pj47Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs%2BOzs%2BOz4%2BOz4%2BOz4gupjjgeaqDTeBZAvvjfAD7Ze0rw%3D%3D";
     @Bind(R.id.tv_content)
     TextView tvContent;
 
@@ -61,6 +65,8 @@ public class MainActivity extends AppCompatActivity
     private AlertDialog alertDialog;
     private TextView tvError;
     private ProgressBar pbLogin;
+    private String stuXH;
+    private String stuName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,26 +138,9 @@ public class MainActivity extends AppCompatActivity
         tvCancle.setOnClickListener(listener);
     }
 
-    class MyOnClickListener implements View.OnClickListener {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.tv_change:
-                    changCodeImage();
-                    break;
-                case R.id.tv_ok:
-                    attemptLogin();
-                    break;
-                case R.id.tv_cancle:
-                    alertDialog.dismiss();
-                    break;
-            }
-        }
-    }
-
     //加载验证码
     public void showCodeimage() {
-        OkHttpUtils.get().url(codeUri).build()
+        OkHttpUtils.get().url(codeUrl).build()
                 .connTimeOut(5000)
                 .execute(new BitmapCallback() {
                     @Override
@@ -169,10 +158,11 @@ public class MainActivity extends AppCompatActivity
 
     //切换验证码
     public void changCodeImage() {
-        codeUri += '?';
+        codeUrl += '?';
         showCodeimage();
     }
 
+    //登陆前检查
     private void attemptLogin() {
 
         View focusView = null;
@@ -200,7 +190,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * 想服务器模拟登陆
+     * 像服务器模拟登陆
      */
     private void requestLogin() {
         int visibility = tvError.getVisibility();
@@ -209,7 +199,7 @@ public class MainActivity extends AppCompatActivity
         }
         pbLogin.setVisibility(View.VISIBLE);
         final PostFormBuilder post = OkHttpUtils.post();
-        post.url(loginUri);
+        post.url(loginUrl);
         post.addParams("__VIEWSTATE", "dDwtMTMxNjk0NzYxNTs7PpK7CYMIAY8gja8M8G8YpGL8ZEAL");
         post.addParams("__VIEWSTATEGENERATOR", "92719903");
         post.addParams("txtUserName", username);
@@ -224,14 +214,6 @@ public class MainActivity extends AppCompatActivity
         post.build()
                 .connTimeOut(5000)
                 .execute(new StringCallback() {
-
-                    @Override
-                    public String parseNetworkResponse(Response response) throws IOException {
-                        String cookie = response.header("Cookie");
-                        System.out.println("下面是Cookie");
-                        System.out.println("Cookie :"+cookie);
-                        return super.parseNetworkResponse(response);
-                    }
 
                     @Override
                     public void onError(Call call, Exception e) {
@@ -258,12 +240,35 @@ public class MainActivity extends AppCompatActivity
                             changCodeImage();
                             pbLogin.setVisibility(View.INVISIBLE);
                         } else {
+                            //登陆成功
                             System.out.println("登陆成功");
                             alertDialog.dismiss();
-                            tvContent.setText(response);
+                            //抓取查询uti
+                            HtmlUtils utils = new HtmlUtils(response);
+                            cjcxUrl = mainUrl + "/" + utils.encoder(response);
+                            // tvContent.setText(cjcxUrl);
+                            String xhandName = utils.getXhandName();
+                            initUrlData(xhandName);
+                            System.out.println("学号 ：" + stuXH);
+                            System.out.println("姓名 ：" + stuName);
                         }
                     }
                 });
+    }
+
+    private void initUrlData(String xhandName) {
+        //201311011034 田宇同学
+        String[] split = xhandName.split(" ");
+        stuXH = split[0];
+        stuName = split[1].replace("同学", "");
+        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
+        kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
+        kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
+        StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
+    }
+
+    public void selectCJ(View view) {
+
     }
 
 
@@ -293,13 +298,19 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_search_cj) {
             // Handle the camera action
+            //成绩查询
+            Intent intent = new Intent(mContext, SearchCjActivity.class);
+            intent.putExtra("cjcxUrl", cjcxUrl);
+            intent.putExtra("StuCenterUrl", StuCenterUrl);
+            startActivity(intent);
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -312,40 +323,24 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        //   DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    //此处有问题，有待解决
-    public void select(View view) {
-        final PostFormBuilder post = OkHttpUtils.post();
-        //xscj.aspx?xh=201311011011&xm=胡洪源&gnmkdm=N121605
-
-        post.url(chengjiUri)
-                .addHeader("Host", "210.44.159.4")
-                .addHeader("Referer", "http://210.44.159.4/xscj.aspx?xh=201311011011&xm=%BA%FA%BA%E9%D4%B4&gnmkdm=N121605")
-                .addHeader("Accept-Language", "zh-CN,zh;q=0.8")
-                .addParams("__VIEWSTATE", chengjitou)
-                .addParams("__VIEWSTATEGENERATOR", "8963BEEC")
-                .addParams("ddlXN", "2015-2016")
-                .addParams("ddlXQ", "1")
-                .addParams("txtQSCJ", "0")
-                .addParams("txtZZCJ", "100")
-                .addParams("Button1", "%B0%B4%D1%A7%C6%DA%B2%E9%D1%AF")
-                .build().execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e) {
-                System.out.println("onError");
-                System.out.println(e.getMessage().toString());
+    class MyOnClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.tv_change:
+                    changCodeImage();
+                    break;
+                case R.id.tv_ok:
+                    attemptLogin();
+                    break;
+                case R.id.tv_cancle:
+                    alertDialog.dismiss();
+                    break;
             }
-
-            @Override
-            public void onResponse(String response) {
-                System.out.println("onResponse");
-                tvContent.setText(response);
-            }
-        });
-
+        }
     }
 }
