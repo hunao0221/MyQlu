@@ -36,12 +36,12 @@ import okhttp3.Call;
 
 public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    //    @Bind(R.id.spinner_year)
-//    Spinner spinnerYear;
-//    @Bind(R.id.spinner_xueqi)
-//    Spinner spinnerXueqi;
-//    @Bind(R.id.spinner_mode)
-//    Spinner spinnerMode;
+    @Bind(R.id.spinner_year)
+    Spinner spinnerYear;
+    @Bind(R.id.spinner_xueqi)
+    Spinner spinnerXueqi;
+    @Bind(R.id.spinner_mode)
+    Spinner spinnerMode;
     @Bind(R.id.list_cj)
     ListView listCj;
     @Bind(R.id.toolbar)
@@ -96,7 +96,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         initView();
         initData();
         initYearList();
-        // initLisitener();
+        initLisitener();
     }
 
 
@@ -203,37 +203,32 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void initSpinner() {
-//        @Bind(R.id.spinner_year)
-//        Spinner spinnerYear;
-//        @Bind(R.id.spinner_xueqi)
-//        Spinner spinnerXueqi;
-//        @Bind(R.id.spinner_mode)
-//        Spinner spinnerMode;
-        Spinner spinnerYear = (Spinner) findViewById(R.id.spinner_year);
-        Spinner spinnerXueqi = (Spinner) findViewById(R.id.spinner_xueqi);
-        Spinner spinnerMode = (Spinner) findViewById(R.id.spinner_mode);
+
+//        Spinner spinnerYear = (Spinner) findViewById(R.id.spinner_year);
+//        Spinner spinnerXueqi = (Spinner) findViewById(R.id.spinner_xueqi);
+//        Spinner spinnerMode = (Spinner) findViewById(R.id.spinner_mode);
 
         xueqiAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, xueqi);
         xueqiAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerXueqi.setAdapter(xueqiAdapter);
-        spinnerXueqi.setSelection(1, true);
+        spinnerXueqi.setSelection(0);
 
         modeAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mode);
         modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMode.setAdapter(modeAdapter);
-        spinnerMode.setSelection(0, true);
+        spinnerMode.setSelection(0);
 
         yearsAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, yearList);
         yearsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerYear.setAdapter(yearsAdapter);
-        spinnerYear.setSelection(1, true);
+        spinnerYear.setSelection(1);
 
         //选择监听器
         spinnerYear.setOnItemSelectedListener(this);
         spinnerXueqi.setOnItemSelectedListener(this);
         spinnerMode.setOnItemSelectedListener(this);
 
-        initLisitener();
+        //initLisitener();
     }
 
     private void initLisitener() {

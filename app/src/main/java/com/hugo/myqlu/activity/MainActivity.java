@@ -21,10 +21,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.utils.HtmlUtils;
 import com.hugo.myqlu.utils.SpUtil;
+import com.hugo.myqlu.utils.TextEncoderUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.BitmapCallback;
@@ -44,8 +46,9 @@ public class MainActivity extends AppCompatActivity
     private static String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
     private static String kscxUrl = "http://210.44.159.4/xskscx.aspx?xh=stuxh&xm=stuname%90&gnmkdm=N121604";
     private static String kbcxUrl = "http://210.44.159.4/xskbcx.aspx?xh=stuxh&xm=stuname&gnmkdm=N121603";
-    String VIEWSTATE = "dDwtNjI5MTUzMDY1O3Q8O2w8aTwxPjs+O2w8dDw7bDxpPDE+O2k8MTU+O2k8MTc+O2k8MjM+O2k8MjU+O2k8Mjc+O2k8Mjk+O2k8MzA+O2k8MzI+O2k8MzQ+O2k8MzY+O2k8NDY+O2k8NTA+Oz47bDx0PHQ8O3Q8aTwxNz47QDxcZTsyMDAxLTIwMDI7MjAwMi0yMDAzOzIwMDMtMjAwNDsyMDA0LTIwMDU7MjAwNS0yMDA2OzIwMDYtMjAwNzsyMDA3LTIwMDg7MjAwOC0yMDA5OzIwMDktMjAxMDsyMDEwLTIwMTE7MjAxMS0yMDEyOzIwMTItMjAxMzsyMDEzLTIwMTQ7MjAxNC0yMDE1OzIwMTUtMjAxNjsyMDE2LTIwMTc7PjtAPFxlOzIwMDEtMjAwMjsyMDAyLTIwMDM7MjAwMy0yMDA0OzIwMDQtMjAwNTsyMDA1LTIwMDY7MjAwNi0yMDA3OzIwMDctMjAwODsyMDA4LTIwMDk7MjAwOS0yMDEwOzIwMTAtMjAxMTsyMDExLTIwMTI7MjAxMi0yMDEzOzIwMTMtMjAxNDsyMDE0LTIwMTU7MjAxNS0yMDE2OzIwMTYtMjAxNzs+Pjs+Ozs+O3Q8cDw7cDxsPG9uY2xpY2s7PjtsPHByZXZpZXcoKVw7Oz4+Pjs7Pjt0PHA8O3A8bDxvbmNsaWNrOz47bDx3aW5kb3cuY2xvc2UoKVw7Oz4+Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOWtpuWPt++8mjIwMTMxMTAxMTAxMTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w85aeT5ZCN77ya6IOh5rSq5rqQOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDzlrabpmaLvvJrnkIblrabpmaI7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOS4k+S4mu+8mjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w85L+h5oGv5LiO6K6h566X56eR5a2mOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDzooYzmlL/nj63vvJrkv6HorqExMy0xOz4+Oz47Oz47dDxAMDw7Ozs7Ozs7Ozs7Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8U0RJTEk7Pj47Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs+Ozs+Oz4+Oz4+Oz4gupjjgeaqDTeBZAvvjfAD7Ze0rw==";
-
+    private String noCodeVIEWSTATE;
+    private String noCodeLoginUrl = "http://210.44.159.4/default6.aspx";
+    private String kbVIEWSTATE;
     @Bind(R.id.tv_content)
     TextView tvContent;
 
@@ -70,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     private String stuName;
     private TextView header_name;
     private TextView header_xh;
+    private SharedPreferences sp;
 
 
     @Override
@@ -79,10 +83,62 @@ public class MainActivity extends AppCompatActivity
         ButterKnife.bind(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        initData();
         initView();
         initListener();
+        autoLogin();
     }
 
+    private void initData() {
+        kbVIEWSTATE = getString(R.string.KBVIEWSTATE);
+        noCodeVIEWSTATE = getString(R.string.noCodeVIEWSTATE);
+    }
+
+    private void autoLogin() {
+        sp = SpUtil.getSp(mContext, "privacy");
+        username = sp.getString("username", null);
+        password = sp.getString("password", null);
+        System.out.println("用户名和密码   -----" + username + password);
+        if (username != null && password != null) {
+            System.out.println("请求自动登陆");
+            requestLoginNocode();
+        }
+    }
+
+    private void requestLoginNocode() {
+        OkHttpUtils.post().url(noCodeLoginUrl)
+                .addParams("__VIEWSTATE", noCodeVIEWSTATE)
+                .addParams("__VIEWSTATEGENERATOR", "89ADBA87")
+                .addParams("tname", "")
+                .addParams("tbtns", "")
+                .addParams("tnameXw", "yhdl")
+                .addParams("tbtnsXw", "yhdlyhdl|xwxsdl")
+                .addParams("txtYhm", username) //学号
+                .addParams("txtXm", password) //不知道是什么，和密码一样
+                .addParams("txtMm", password)
+                .addParams("rblJs", "%D1%A7%C9%FA")
+                .addParams("btnDl", "%B5%C7+%C2%BC")
+                .addHeader("Referer", "http://210.44.159.4/default6.aspx")
+                .addHeader("Host", "210.44.159.4")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36")
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e) {
+                System.out.println("onError");
+            }
+
+            @Override
+            public void onResponse(String response) {
+                //登陆成功，此时已经进入个人首页
+                //抓取查询url
+                Toast.makeText(mContext, "登陆成功", Toast.LENGTH_SHORT).show();
+                HtmlUtils utils = new HtmlUtils(response);
+                cjcxUrl = mainUrl + "/" + utils.encoder(response);
+                String xhandName = utils.getXhandName();
+                initUrlData(xhandName);
+            }
+        });
+    }
 
     private void initView() {
 
@@ -100,7 +156,6 @@ public class MainActivity extends AppCompatActivity
         iv_user_heead = (ImageView) view.findViewById(R.id.iv_user_head);
         header_name = (TextView) view.findViewById(R.id.header_name);
         header_xh = (TextView) view.findViewById(R.id.header_xh);
-
     }
 
     private void initListener() {
@@ -108,10 +163,40 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 drawer.closeDrawer(GravityCompat.START);
-                showLoginDialog();
+                //判断当前时候在线
+                if (isOnLine()) {
+                    //显示个人信息
+                    Toast.makeText(mContext, "您已在线", Toast.LENGTH_SHORT).show();
+                } else {
+                    //登陆
+                    if (username != null && password != null) {
+                        requestLoginNocode();
+
+                    }
+                }
             }
         });
+    }
 
+    //判断当前是否在线-------------------------还有没处理完
+    private boolean isOnLine() {
+        OkHttpUtils.get().url(StuCenterUrl)
+                .build().execute(new StringCallback() {
+            boolean flag = false;
+
+            @Override
+            public void onError(Call call, Exception e) {
+
+            }
+
+            @Override
+            public void onResponse(String response) {
+                if (response.contains(stuName)) {
+                    flag = true;
+                }
+            }
+        });
+        return false;
     }
 
     /**
@@ -137,6 +222,7 @@ public class MainActivity extends AppCompatActivity
         tvOk = ButterKnife.findById(view, R.id.tv_ok);
         tvError = ButterKnife.findById(view, R.id.tv_error);
         pbLogin = ButterKnife.findById(view, R.id.pb_login);
+        //显示验证码
         showCodeimage();
         MyOnClickListener listener = new MyOnClickListener();
         tvChange.setOnClickListener(listener);
@@ -250,7 +336,7 @@ public class MainActivity extends AppCompatActivity
                             //登陆成功
                             System.out.println("登陆成功");
                             //保存用户名和密码，以便静默登陆
-                            SharedPreferences sp = SpUtil.getSp(mContext, "privacy");
+
                             sp.edit().putString("username", username).commit();
                             sp.edit().putString("password", password).commit();
                             alertDialog.dismiss();
@@ -273,17 +359,41 @@ public class MainActivity extends AppCompatActivity
         header_name.setText(stuName);
         header_xh.setText(stuXH);
         //设置需要的url
-        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
-        kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
-        kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
+        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
+        kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
+        kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
+
+        System.out.println("cjcxUrl :" + cjcxUrl);
+        System.out.println("kbcxUrl :" + kbcxUrl);
+        System.out.println("kscxUrl :" + kscxUrl);
+        System.out.println("StuCenterUrl :" + StuCenterUrl);
 
     }
 
     public void selectCJ(View view) {
+        OkHttpUtils.post().url(kbcxUrl)
+                .addParams("__EVENTTARGET", "xnd")
+                .addParams("__EVENTARGUMENT", "")
+                .addParams("__VIEWSTATE", kbVIEWSTATE)
+                .addParams("__VIEWSTATEGENERATOR", "55530A43")
+                .addParams("xnd", "2013-2014")
+                .addParams("xqd", "1")
+                .addHeader("Referer", kbcxUrl)
+                .addHeader("Host", "210.44.159.4")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36")
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e) {
+                tvContent.setText(e.getMessage().toString());
+            }
 
+            @Override
+            public void onResponse(String response) {
+                tvContent.setText(response);
+            }
+        });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -340,7 +450,6 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra("cjcxUrl", cjcxUrl);
         intent.putExtra("StuCenterUrl", StuCenterUrl);
         startActivity(intent);
-
     }
 
     class MyOnClickListener implements View.OnClickListener {
