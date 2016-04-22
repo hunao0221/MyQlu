@@ -51,7 +51,6 @@ public class HtmlUtils {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        System.out.println("编码后的LInk ：" + url);
         return url;
     }
 
@@ -116,11 +115,15 @@ public class HtmlUtils {
         Document document = Jsoup.parse(response);
         Element select = document.getElementById("ddlXN");
         Elements options = select.select("option");
-        List<String> yeatList = new ArrayList<>();
+        List<String> tempList = new ArrayList<>();
+        List<String> yearList = new ArrayList<>();
         for (Element option : options) {
-            yeatList.add(option.text());
+            tempList.add(option.text());
         }
-        return yeatList;
+        for (int j = tempList.size() - 1; j > 0; j--) {
+            yearList.add(tempList.get(j));
+        }
+        return yearList;
     }
 
 }

@@ -22,12 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity" />
-        <activity android:name=".activity.SearchCjActivity" />
         <activity
-            android:name=".activity.CheckoutCjActivity"
-            android:label="@string/title_activity_checkout_cj"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".activity.SearchCjActivity"
+            android:label="成绩" />
+
     </application>
 
 </manifest>

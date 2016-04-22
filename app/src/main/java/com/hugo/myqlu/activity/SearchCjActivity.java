@@ -3,14 +3,20 @@ package com.hugo.myqlu.activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ChengjiBean;
@@ -26,7 +32,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 
-public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
 
     @Bind(R.id.spinner_year)
     Spinner spinnerYear;
@@ -36,6 +42,8 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     Spinner spinnerMode;
     @Bind(R.id.list_cj)
     ListView listCj;
+    @Bind(R.id.toolbar)
+    Toolbar toolbar;
     private String cjcxUrl;
     private String stuCenterUrl;
     private Context mContext = this;
@@ -45,8 +53,8 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     ArrayAdapter<String> modeAdapter;
     ArrayAdapter<String> yearsAdapter;
     private List<String> yearList;
-    private String ddlXN = null;
-    private String ddlXQ = null;
+    private String ddlXN = "";
+    private String ddlXQ = "";
     private String selectMode = null;
     private String VIEWSTATE = null;
     private String XQVIEWSTATE;
@@ -57,18 +65,33 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     private static String BUTTON_ZX = "%D4%DA%D0%A3%D1%A7%CF%B0%B3%C9%BC%A8%B2%E9%D1%AF";
     private List<ChengjiBean> cjList;
     private ListView listview;
+    private String title = "";
+    private TextView tvTitle;
+    private String tempXQ;
+    private String tempXN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_search_cj);
         ButterKnife.bind(this);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        initView();
         intiData();
-        listview = (ListView) findViewById(R.id.list_cj);
+
         cjcxUrl = getIntent().getStringExtra("cjcxUrl");
         stuCenterUrl = getIntent().getStringExtra("StuCenterUrl");
         initData();
         initYearList();
+    }
+
+    private void initView() {
+        listview = (ListView) findViewById(R.id.list_cj);
+        View view = View.inflate(mContext, R.layout.item_header, null);
+        tvTitle = ButterKnife.findById(view, R.id.tv_title);
+        listview.addHeaderView(view, null, false);
     }
 
     private void intiData() {
@@ -78,14 +101,12 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void initData() {
-        xueqi.add("");
         xueqi.add("1");
         xueqi.add("2");
         xueqi.add("3");
-        mode.add("");
-        mode.add("按学期查询");
-        mode.add("按学年查询");
-        mode.add("在校学习成绩");
+        mode.add("学期");
+        mode.add("学年");
+        mode.add("在校");
     }
 
 
@@ -114,12 +135,16 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         xueqiAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, xueqi);
         xueqiAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerXueqi.setAdapter(xueqiAdapter);
+        spinnerXueqi.setSelection(0);
         modeAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mode);
         modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMode.setAdapter(modeAdapter);
+        spinnerMode.setSelection(0);
         yearsAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, yearList);
         yearsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerYear.setAdapter(yearsAdapter);
+        spinnerYear.setSelection(1);
+
         //选择监听器
         spinnerYear.setOnItemSelectedListener(this);
         spinnerXueqi.setOnItemSelectedListener(this);
@@ -131,29 +156,25 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         switch (parent.getId()) {
             case R.id.spinner_year:
                 ddlXN = yearList.get(position).toString();
-                checkoutFromWeb();
                 break;
             case R.id.spinner_xueqi:
                 ddlXQ = xueqi.get(position).toString();
-                System.out.println(ddlXQ);
-                checkoutFromWeb();
                 break;
             case R.id.spinner_mode:
                 String modeString = mode.get(position).toString();
-                if (modeString.equals("按学期查询")) {
+                if (modeString.equals("学期")) {
                     selectMode = BUTTON_XQ;
                     VIEWSTATE = XQVIEWSTATE;
-                } else if (modeString.equals("按学年查询")) {
+                } else if (modeString.equals("学年")) {
                     selectMode = BUTTON_XN;
                     VIEWSTATE = JUSTXNVIEWSTATE;
-                } else if (modeString.equals("在校学习成绩")) {
+                } else if (modeString.equals("在校")) {
                     selectMode = BUTTON_ZX;
                     VIEWSTATE = JUSTZXVIEWSTATE;
-
                 }
-                checkoutFromWeb();
                 break;
         }
+        checkoutFromWeb();
     }
 
     @Override
@@ -163,19 +184,39 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
 
     private void checkoutFromWeb() {
-        if (ddlXN == null || ddlXQ == null || selectMode == null) {
+
+        tempXQ = "";
+        tempXN = "";
+
+        tempXQ = ddlXQ;
+        tempXN = ddlXN;
+        if (selectMode == null) {
             return;
         }
-        if (selectMode.equals(BUTTON_ZX)) {
+        if (selectMode == BUTTON_XQ) {
+            //按学期查询
+            if (ddlXQ.equals("") || ddlXN.equals("")) {
+                return;
+            }
+            title = ddlXN + "学年第" + ddlXQ + "学期成绩";
+        } else if (selectMode.equals(BUTTON_ZX)) {
+            //在校成绩查询
+            title = "在校学习成绩";
+            ddlXQ = "";
             ddlXN = "";
-            ddlXQ = "";
         } else if (selectMode.equals(BUTTON_XN)) {
+            //按学年查询
+            if (ddlXN.equals("")) {
+                return;
+            }
             ddlXQ = "";
+            title = ddlXN + "学年学习成绩";
         }
 
         System.out.println("开始查成绩了");
         System.out.println(ddlXN + "----" + ddlXQ + "----" + selectMode);
         final PostFormBuilder post = OkHttpUtils.post();
+
         post.url(cjcxUrl)
                 .addHeader("Host", "210.44.159.4")
                 .addHeader("Referer", cjcxUrl)
@@ -199,16 +240,32 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 HtmlUtils cjUtils = new HtmlUtils(response);
                 cjList = cjUtils.parseCJTable();
                 initUI();
+                //如果CJList的size == 1，表示没有成绩；
                 if (cjList.size() == 1) {
                     System.out.println("没有成绩哦");
+                    title = "当前条件没有成绩哦";
                 }
+                //查询成功后把按钮值充值为空；(即查询模式)
+                ddlXQ = tempXQ;
+                ddlXN = tempXN;
             }
         });
     }
 
     private void initUI() {
-        listview.setAdapter(new MyAdapter());
+        MyAdapter adapter = new MyAdapter();
+        tvTitle.setText(title);
+        tvTitle.setTextSize(18);
+        tvTitle.setGravity(Gravity.CENTER);
+        listview.setAdapter(adapter);
+        startAnim();
     }
+
+    private void startAnim() {
+        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.anim);
+        listview.startAnimation(animation);
+    }
+
 
     class MyAdapter extends BaseAdapter {
 
@@ -229,7 +286,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            View view = null;
+            View view;
             ViewHolder holder;
             if (convertView == null) {
                 view = View.inflate(mContext, R.layout.item_cj, null);
@@ -250,5 +307,20 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     public class ViewHolder {
         TextView tvKeCheng;
         TextView tvCj;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case android.R.id.home:
+                Toast.makeText(mContext, "你点我了", Toast.LENGTH_SHORT).show();
+                onBackPressed();
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 }
