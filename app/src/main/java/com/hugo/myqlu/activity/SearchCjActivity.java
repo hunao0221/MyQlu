@@ -1,6 +1,7 @@
 package com.hugo.myqlu.activity;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,14 +14,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ChengjiBean;
 import com.hugo.myqlu.utils.HtmlUtils;
+import com.hugo.myqlu.utils.SpUtil;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -32,19 +34,21 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 
-public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, View.OnClickListener {
+public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
-    @Bind(R.id.spinner_year)
-    Spinner spinnerYear;
-    @Bind(R.id.spinner_xueqi)
-    Spinner spinnerXueqi;
-    @Bind(R.id.spinner_mode)
-    Spinner spinnerMode;
+    //    @Bind(R.id.spinner_year)
+//    Spinner spinnerYear;
+//    @Bind(R.id.spinner_xueqi)
+//    Spinner spinnerXueqi;
+//    @Bind(R.id.spinner_mode)
+//    Spinner spinnerMode;
     @Bind(R.id.list_cj)
     ListView listCj;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    private String cjcxUrl;
+    @Bind(R.id.rootView)
+    LinearLayout rootView;
+    //   private String cjcxUrl;
     private String stuCenterUrl;
     private Context mContext = this;
     private List<String> xueqi = new ArrayList<>();
@@ -69,6 +73,17 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     private TextView tvTitle;
     private String tempXQ;
     private String tempXN;
+    private String username;
+    private String password;
+    private String stuXH;
+    private String stuName;
+    private String noCodeVIEWSTATE = "dDwtMTQxNDAwNjgwODt0PDtsPGk8MD47PjtsPHQ8O2w8aTwyMT47aTwyMz47aTwyNT47aTwyNz47PjtsPHQ8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+O3Q8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+O3Q8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+O3Q8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+Oz4+Oz4+Oz6Mdzik0aXSmAdZCumNJ3uYvSG9aA==";
+    private String noCodeLoginUrl = "http://210.44.159.4/default6.aspx";
+    //成绩查询url，需要替换数据
+    private static String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
+    private static String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
+    private String mainUrl = "http://210.44.159.4";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +94,11 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initView();
-        intiData();
-
-        cjcxUrl = getIntent().getStringExtra("cjcxUrl");
-        stuCenterUrl = getIntent().getStringExtra("StuCenterUrl");
         initData();
         initYearList();
+        // initLisitener();
     }
+
 
     private void initView() {
         listview = (ListView) findViewById(R.id.list_cj);
@@ -94,13 +107,19 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         listview.addHeaderView(view, null, false);
     }
 
-    private void intiData() {
+    private void initData() {
+        yearList = null;
+        cjcxUrl = getIntent().getStringExtra("cjcxUrl");
+        stuCenterUrl = getIntent().getStringExtra("StuCenterUrl");
         XQVIEWSTATE = getString(R.string.XQVIEWSTATE);
         JUSTZXVIEWSTATE = getString(R.string.JUSTZXVIEWSTATE);
         JUSTXNVIEWSTATE = getString(R.string.JUSTXNVIEWSTATE);
-    }
 
-    private void initData() {
+        SharedPreferences sp = SpUtil.getSp(mContext, "privacy");
+        //已保存的用户名和密码
+        username = sp.getString("username", null);
+        password = sp.getString("password", null);
+        System.out.println("用户名和密码 :" + username + "--" + password);
         xueqi.add("1");
         xueqi.add("2");
         xueqi.add("3");
@@ -108,7 +127,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         mode.add("学年");
         mode.add("在校");
     }
-
 
     private void initYearList() {
         OkHttpUtils.get()
@@ -118,12 +136,17 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e) {
-
+                //加载学年失败，原因：没有登录，或者已经掉线,静默登陆
+                if (username != null && password != null) {
+                    System.out.println("获取年份失败，装备静默登陆");
+                    requestLoginByNoCode();
+                }
             }
 
             @Override
             public void onResponse(String response) {
                 // tvContent.setText(response);
+                System.out.println("initYearList----onResponse");
                 HtmlUtils utils = new HtmlUtils(response);
                 yearList = utils.parseSelectList();
                 initSpinner();
@@ -131,24 +154,95 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         });
     }
 
+    private void requestLoginByNoCode() {
+
+        OkHttpUtils.post().url(noCodeLoginUrl)
+                .addParams("__VIEWSTATE", noCodeVIEWSTATE)
+                .addParams("__VIEWSTATEGENERATOR", "89ADBA87")
+                .addParams("tname", "")
+                .addParams("tbtns", "")
+                .addParams("tnameXw", "yhdl")
+                .addParams("tbtnsXw", "yhdlyhdl|xwxsdl")
+                .addParams("txtYhm", username) //学号
+                .addParams("txtXm", password) //不知道是什么，和密码一样
+                .addParams("txtMm", password)
+                .addParams("rblJs", "%D1%A7%C9%FA")
+                .addParams("btnDl", "%B5%C7+%C2%BC")
+                .addHeader("Referer", "http://210.44.159.4/default6.aspx")
+                .addHeader("Host", "210.44.159.4")
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36")
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e) {
+                System.out.println("onError");
+                //tvContent.setText(e.getMessage().toString());
+            }
+
+            @Override
+            public void onResponse(String response) {
+                //登陆成功，此时已经进入个人首页
+                //抓取查询url
+                HtmlUtils utils = new HtmlUtils(response);
+                cjcxUrl = mainUrl + "/" + utils.encoder(response);
+                String xhandName = utils.getXhandName();
+                initUrlData(xhandName);
+                initYearList();
+            }
+        });
+    }
+
+    private void initUrlData(String xhandName) {
+        //201311011034 田宇同学
+        String[] split = xhandName.split(" ");
+        stuXH = split[0]; //用户的学号
+        stuName = split[1].replace("同学", "");  //用户的姓名
+        System.out.println(stuXH + "-------" + stuName);
+        //设置需要的url
+        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
+        StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
+    }
+
     private void initSpinner() {
+//        @Bind(R.id.spinner_year)
+//        Spinner spinnerYear;
+//        @Bind(R.id.spinner_xueqi)
+//        Spinner spinnerXueqi;
+//        @Bind(R.id.spinner_mode)
+//        Spinner spinnerMode;
+        Spinner spinnerYear = (Spinner) findViewById(R.id.spinner_year);
+        Spinner spinnerXueqi = (Spinner) findViewById(R.id.spinner_xueqi);
+        Spinner spinnerMode = (Spinner) findViewById(R.id.spinner_mode);
+
         xueqiAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, xueqi);
         xueqiAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerXueqi.setAdapter(xueqiAdapter);
-        spinnerXueqi.setSelection(0);
+        spinnerXueqi.setSelection(1, true);
+
         modeAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mode);
         modeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMode.setAdapter(modeAdapter);
-        spinnerMode.setSelection(0);
+        spinnerMode.setSelection(0, true);
+
         yearsAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, yearList);
         yearsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerYear.setAdapter(yearsAdapter);
-        spinnerYear.setSelection(1);
+        spinnerYear.setSelection(1, true);
 
         //选择监听器
         spinnerYear.setOnItemSelectedListener(this);
         spinnerXueqi.setOnItemSelectedListener(this);
         spinnerMode.setOnItemSelectedListener(this);
+
+        initLisitener();
+    }
+
+    private void initLisitener() {
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
@@ -182,9 +276,8 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
     }
 
-
     private void checkoutFromWeb() {
-
+        //临时变量
         tempXQ = "";
         tempXN = "";
 
@@ -236,7 +329,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
             @Override
             public void onResponse(String response) {
-                System.out.println("onResponse");
+                System.out.println("onResponse--------checkoutFromWeb");
                 HtmlUtils cjUtils = new HtmlUtils(response);
                 cjList = cjUtils.parseCJTable();
                 initUI();
@@ -245,7 +338,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                     System.out.println("没有成绩哦");
                     title = "当前条件没有成绩哦";
                 }
-                //查询成功后把按钮值充值为空；(即查询模式)
+                //还原数据
                 ddlXQ = tempXQ;
                 ddlXN = tempXN;
             }
@@ -309,15 +402,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         TextView tvCj;
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case android.R.id.home:
-                Toast.makeText(mContext, "你点我了", Toast.LENGTH_SHORT).show();
-                onBackPressed();
-                break;
-        }
-    }
 
     @Override
     public void onBackPressed() {

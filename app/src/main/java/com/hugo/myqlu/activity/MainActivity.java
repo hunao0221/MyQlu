@@ -1,7 +1,8 @@
-package com.hugo.myqlu;
+package com.hugo.myqlu.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -21,8 +22,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.hugo.myqlu.activity.SearchCjActivity;
+import com.hugo.myqlu.R;
 import com.hugo.myqlu.utils.HtmlUtils;
+import com.hugo.myqlu.utils.SpUtil;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.BitmapCallback;
@@ -38,11 +40,10 @@ public class MainActivity extends AppCompatActivity
     private String mainUrl = "http://210.44.159.4";
     private String codeUrl = "http://210.44.159.4/CheckCode.aspx";
     private String loginUrl = "http://210.44.159.4/default2.aspx";
-    private String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
-    //xscj.aspx?xh=201311011011&xm=胡洪源&gnmkdm=N121605
-    String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
-    String kscxUrl = "http://210.44.159.4/xskscx.aspx?xh=stuxh&xm=stuname%90&gnmkdm=N121604";
-    String kbcxUrl = "http://210.44.159.4/xskbcx.aspx?xh=stuxh&xm=stuname&gnmkdm=N121603";
+    private static String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
+    private static String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
+    private static String kscxUrl = "http://210.44.159.4/xskscx.aspx?xh=stuxh&xm=stuname%90&gnmkdm=N121604";
+    private static String kbcxUrl = "http://210.44.159.4/xskbcx.aspx?xh=stuxh&xm=stuname&gnmkdm=N121603";
     String VIEWSTATE = "dDwtNjI5MTUzMDY1O3Q8O2w8aTwxPjs+O2w8dDw7bDxpPDE+O2k8MTU+O2k8MTc+O2k8MjM+O2k8MjU+O2k8Mjc+O2k8Mjk+O2k8MzA+O2k8MzI+O2k8MzQ+O2k8MzY+O2k8NDY+O2k8NTA+Oz47bDx0PHQ8O3Q8aTwxNz47QDxcZTsyMDAxLTIwMDI7MjAwMi0yMDAzOzIwMDMtMjAwNDsyMDA0LTIwMDU7MjAwNS0yMDA2OzIwMDYtMjAwNzsyMDA3LTIwMDg7MjAwOC0yMDA5OzIwMDktMjAxMDsyMDEwLTIwMTE7MjAxMS0yMDEyOzIwMTItMjAxMzsyMDEzLTIwMTQ7MjAxNC0yMDE1OzIwMTUtMjAxNjsyMDE2LTIwMTc7PjtAPFxlOzIwMDEtMjAwMjsyMDAyLTIwMDM7MjAwMy0yMDA0OzIwMDQtMjAwNTsyMDA1LTIwMDY7MjAwNi0yMDA3OzIwMDctMjAwODsyMDA4LTIwMDk7MjAwOS0yMDEwOzIwMTAtMjAxMTsyMDExLTIwMTI7MjAxMi0yMDEzOzIwMTMtMjAxNDsyMDE0LTIwMTU7MjAxNS0yMDE2OzIwMTYtMjAxNzs+Pjs+Ozs+O3Q8cDw7cDxsPG9uY2xpY2s7PjtsPHByZXZpZXcoKVw7Oz4+Pjs7Pjt0PHA8O3A8bDxvbmNsaWNrOz47bDx3aW5kb3cuY2xvc2UoKVw7Oz4+Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOWtpuWPt++8mjIwMTMxMTAxMTAxMTs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w85aeT5ZCN77ya6IOh5rSq5rqQOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDzlrabpmaLvvJrnkIblrabpmaI7Pj47Pjs7Pjt0PHA8cDxsPFRleHQ7PjtsPOS4k+S4mu+8mjs+Pjs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w85L+h5oGv5LiO6K6h566X56eR5a2mOz4+Oz47Oz47dDxwPHA8bDxUZXh0Oz47bDzooYzmlL/nj63vvJrkv6HorqExMy0xOz4+Oz47Oz47dDxAMDw7Ozs7Ozs7Ozs7Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs+Ozs+O3Q8cDxwPGw8VGV4dDs+O2w8U0RJTEk7Pj47Pjs7Pjt0PEAwPDs7Ozs7Ozs7Ozs+Ozs+Oz4+Oz4+Oz4gupjjgeaqDTeBZAvvjfAD7Ze0rw==";
 
     @Bind(R.id.tv_content)
@@ -67,6 +68,9 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar pbLogin;
     private String stuXH;
     private String stuName;
+    private TextView header_name;
+    private TextView header_xh;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,8 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         View view = navigationView.getHeaderView(0);
         iv_user_heead = (ImageView) view.findViewById(R.id.iv_user_head);
+        header_name = (TextView) view.findViewById(R.id.header_name);
+        header_xh = (TextView) view.findViewById(R.id.header_xh);
 
     }
 
@@ -146,6 +152,7 @@ public class MainActivity extends AppCompatActivity
                     @Override
                     public void onError(Call call, Exception e) {
                         System.out.println("验证码加载失败");
+                        //应该给验证码设置一个图片
                     }
 
                     @Override
@@ -242,15 +249,16 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             //登陆成功
                             System.out.println("登陆成功");
+                            //保存用户名和密码，以便静默登陆
+                            SharedPreferences sp = SpUtil.getSp(mContext, "privacy");
+                            sp.edit().putString("username", username).commit();
+                            sp.edit().putString("password", password).commit();
                             alertDialog.dismiss();
                             //抓取查询uti
                             HtmlUtils utils = new HtmlUtils(response);
                             cjcxUrl = mainUrl + "/" + utils.encoder(response);
-                            // tvContent.setText(cjcxUrl);
                             String xhandName = utils.getXhandName();
                             initUrlData(xhandName);
-                            System.out.println("学号 ：" + stuXH);
-                            System.out.println("姓名 ：" + stuName);
                         }
                     }
                 });
@@ -259,27 +267,23 @@ public class MainActivity extends AppCompatActivity
     private void initUrlData(String xhandName) {
         //201311011034 田宇同学
         String[] split = xhandName.split(" ");
-        stuXH = split[0];
-        stuName = split[1].replace("同学", "");
+        stuXH = split[0]; //用户的学号
+        stuName = split[1].replace("同学", "");  //用户的姓名
+        //设置navigation header的ui
+        header_name.setText(stuName);
+        header_xh.setText(stuXH);
+        //设置需要的url
         cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
         kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
         kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
         StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
+
     }
 
     public void selectCJ(View view) {
 
     }
 
-
-    @Override
-    public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -307,12 +311,11 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_search_cj) {
             // Handle the camera action
             //成绩查询
-            Intent intent = new Intent(mContext, SearchCjActivity.class);
-            intent.putExtra("cjcxUrl", cjcxUrl);
-            intent.putExtra("StuCenterUrl", StuCenterUrl);
-            startActivity(intent);
-        } else if (id == R.id.nav_gallery) {
+            toSearchCjActivity();
 
+        } else if (id == R.id.nav_news) {
+            //新闻
+            startActivity(new Intent(mContext, NewsActivity.class));
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
@@ -325,6 +328,19 @@ public class MainActivity extends AppCompatActivity
 
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    /**
+     * 跳转到成绩查询页面
+     */
+    private void toSearchCjActivity() {
+
+        Intent intent = new Intent(mContext, SearchCjActivity.class);
+        intent.putExtra("cjcxUrl", cjcxUrl);
+        intent.putExtra("StuCenterUrl", StuCenterUrl);
+        startActivity(intent);
+
     }
 
     class MyOnClickListener implements View.OnClickListener {
@@ -343,4 +359,18 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            //让返回键实现home键的功能
+            Intent i = new Intent(Intent.ACTION_MAIN);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.addCategory(Intent.CATEGORY_HOME);
+            startActivity(i);
+        }
+    }
+
 }
