@@ -40,7 +40,6 @@ public class HtmlUtils {
         }
         String url = buffer.toString();
         // String cjcxUrl = mainUrl + "/" + url;
-
         int indexXM = url.indexOf("xm");
         int indexStrart = url.indexOf("=", indexXM);
         int indexEnd = url.lastIndexOf("&");

@@ -1,7 +1,6 @@
 package com.hugo.myqlu.activity;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,8 +20,8 @@ import android.widget.TextView;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ChengjiBean;
+import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.utils.HtmlUtils;
-import com.hugo.myqlu.utils.SpUtil;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -48,7 +47,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     Toolbar toolbar;
     @Bind(R.id.rootView)
     LinearLayout rootView;
-    //   private String cjcxUrl;
     private String stuCenterUrl;
     private Context mContext = this;
     private List<String> xueqi = new ArrayList<>();
@@ -73,16 +71,14 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     private TextView tvTitle;
     private String tempXQ;
     private String tempXN;
-    private String username;
     private String password;
     private String stuXH;
     private String stuName;
-    private String noCodeVIEWSTATE = "dDwtMTQxNDAwNjgwODt0PDtsPGk8MD47PjtsPHQ8O2w8aTwyMT47aTwyMz47aTwyNT47aTwyNz47PjtsPHQ8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+O3Q8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+O3Q8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+O3Q8cDxsPGlubmVyaHRtbDs+O2w8Oz4+Ozs+Oz4+Oz4+Oz6Mdzik0aXSmAdZCumNJ3uYvSG9aA==";
-    private String noCodeLoginUrl = "http://210.44.159.4/default6.aspx";
+    private String noCodeVIEWSTATE;
+    private String noCodeLoginUrl;
     //成绩查询url，需要替换数据
-    private static String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
-    private static String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
-    private String mainUrl = "http://210.44.159.4";
+    private static String cjcxUrl;
+    private String mainUrl;
 
 
     @Override
@@ -95,10 +91,10 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initView();
         initData();
+        //requestLoginByNoCode();
         initYearList();
         initLisitener();
     }
-
 
     private void initView() {
         listview = (ListView) findViewById(R.id.list_cj);
@@ -108,18 +104,21 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void initData() {
+        BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
+
         yearList = null;
-        cjcxUrl = getIntent().getStringExtra("cjcxUrl");
-        stuCenterUrl = getIntent().getStringExtra("StuCenterUrl");
+        cjcxUrl = baseInfoDao.query("cjcxUrl");
+        stuCenterUrl = baseInfoDao.query("StuCenterUrl");
+        noCodeLoginUrl = baseInfoDao.query("noCodeLoginUrl");
+        mainUrl = baseInfoDao.query("mainUrl");
         XQVIEWSTATE = getString(R.string.XQVIEWSTATE);
         JUSTZXVIEWSTATE = getString(R.string.JUSTZXVIEWSTATE);
         JUSTXNVIEWSTATE = getString(R.string.JUSTXNVIEWSTATE);
-
-        SharedPreferences sp = SpUtil.getSp(mContext, "privacy");
+        noCodeVIEWSTATE = getString(R.string.noCodeVIEWSTATE);
         //已保存的用户名和密码
-        username = sp.getString("username", null);
-        password = sp.getString("password", null);
-        System.out.println("用户名和密码 :" + username + "--" + password);
+        stuXH = baseInfoDao.query("stuXH");
+        password = baseInfoDao.query("password");
+        System.out.println("用户名和密码 :" + stuXH + "--" + password);
         xueqi.add("1");
         xueqi.add("2");
         xueqi.add("3");
@@ -133,25 +132,27 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 .url(cjcxUrl)
                 .addHeader("Host", "210.44.159.4")
                 .addHeader("Referer", stuCenterUrl)
-                .build().execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e) {
-                //加载学年失败，原因：没有登录，或者已经掉线,静默登陆
-                if (username != null && password != null) {
-                    System.out.println("获取年份失败，装备静默登陆");
-                    requestLoginByNoCode();
-                }
-            }
+                .build()
+                .connTimeOut(3000)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        //加载学年失败，原因：没有登录，或者已经掉线,静默登陆
+                        if (stuXH != null && password != null) {
+                            System.out.println("获取年份失败，装备静默登陆");
+                            requestLoginByNoCode();
+                        }
+                    }
 
-            @Override
-            public void onResponse(String response) {
-                // tvContent.setText(response);
-                System.out.println("initYearList----onResponse");
-                HtmlUtils utils = new HtmlUtils(response);
-                yearList = utils.parseSelectList();
-                initSpinner();
-            }
-        });
+                    @Override
+                    public void onResponse(String response) {
+                        // tvContent.setText(response);
+                        System.out.println("initYearList----onResponse");
+                        HtmlUtils utils = new HtmlUtils(response);
+                        yearList = utils.parseSelectList();
+                        initSpinner();
+                    }
+                });
     }
 
     private void requestLoginByNoCode() {
@@ -163,7 +164,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 .addParams("tbtns", "")
                 .addParams("tnameXw", "yhdl")
                 .addParams("tbtnsXw", "yhdlyhdl|xwxsdl")
-                .addParams("txtYhm", username) //学号
+                .addParams("txtYhm", stuXH) //学号
                 .addParams("txtXm", password) //不知道是什么，和密码一样
                 .addParams("txtMm", password)
                 .addParams("rblJs", "%D1%A7%C9%FA")
@@ -180,33 +181,12 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
             @Override
             public void onResponse(String response) {
-                //登陆成功，此时已经进入个人首页
-                //抓取查询url
-                HtmlUtils utils = new HtmlUtils(response);
-                cjcxUrl = mainUrl + "/" + utils.encoder(response);
-                String xhandName = utils.getXhandName();
-                initUrlData(xhandName);
                 initYearList();
             }
         });
     }
 
-    private void initUrlData(String xhandName) {
-        //201311011034 田宇同学
-        String[] split = xhandName.split(" ");
-        stuXH = split[0]; //用户的学号
-        stuName = split[1].replace("同学", "");  //用户的姓名
-        System.out.println(stuXH + "-------" + stuName);
-        //设置需要的url
-        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", stuName);
-        StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
-    }
-
     private void initSpinner() {
-
-//        Spinner spinnerYear = (Spinner) findViewById(R.id.spinner_year);
-//        Spinner spinnerXueqi = (Spinner) findViewById(R.id.spinner_xueqi);
-//        Spinner spinnerMode = (Spinner) findViewById(R.id.spinner_mode);
 
         xueqiAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, xueqi);
         xueqiAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -228,7 +208,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         spinnerXueqi.setOnItemSelectedListener(this);
         spinnerMode.setOnItemSelectedListener(this);
 
-        //initLisitener();
     }
 
     private void initLisitener() {
