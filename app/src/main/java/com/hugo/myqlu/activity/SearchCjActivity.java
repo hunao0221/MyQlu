@@ -13,8 +13,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -41,12 +41,11 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     Spinner spinnerXueqi;
     @Bind(R.id.spinner_mode)
     Spinner spinnerMode;
-    @Bind(R.id.list_cj)
-    ListView listCj;
+
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.rootView)
-    LinearLayout rootView;
+    @Bind(R.id.pb_cjcx)
+    ProgressBar pbCjcx;
     private String stuCenterUrl;
     private Context mContext = this;
     private List<String> xueqi = new ArrayList<>();
@@ -73,7 +72,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     private String tempXN;
     private String password;
     private String stuXH;
-    private String stuName;
     private String noCodeVIEWSTATE;
     private String noCodeLoginUrl;
     //成绩查询url，需要替换数据
@@ -91,7 +89,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initView();
         initData();
-        //requestLoginByNoCode();
         initYearList();
         initLisitener();
     }
@@ -128,6 +125,9 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void initYearList() {
+        if (pbCjcx.getVisibility() == View.INVISIBLE) {
+            pbCjcx.setVisibility(View.VISIBLE);
+        }
         OkHttpUtils.get()
                 .url(cjcxUrl)
                 .addHeader("Host", "210.44.159.4")
@@ -149,7 +149,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                         // tvContent.setText(response);
                         System.out.println("initYearList----onResponse");
                         HtmlUtils utils = new HtmlUtils(response);
-                        yearList = utils.parseSelectList();
+                        yearList = utils.parseSelectYearList();
                         initSpinner();
                     }
                 });
@@ -176,7 +176,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
             @Override
             public void onError(Call call, Exception e) {
                 System.out.println("onError");
-                //tvContent.setText(e.getMessage().toString());
             }
 
             @Override
@@ -250,6 +249,9 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
     }
 
+    /**
+     * 查询成绩
+     */
     private void checkoutFromWeb() {
         //临时变量
         tempXQ = "";
@@ -280,7 +282,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
             title = ddlXN + "学年学习成绩";
         }
 
-        System.out.println("开始查成绩了");
         System.out.println(ddlXN + "----" + ddlXQ + "----" + selectMode);
         final PostFormBuilder post = OkHttpUtils.post();
 
@@ -306,7 +307,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 System.out.println("onResponse--------checkoutFromWeb");
                 HtmlUtils cjUtils = new HtmlUtils(response);
                 cjList = cjUtils.parseCJTable();
-                initUI();
                 //如果CJList的size == 1，表示没有成绩；
                 if (cjList.size() == 1) {
                     System.out.println("没有成绩哦");
@@ -315,6 +315,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 //还原数据
                 ddlXQ = tempXQ;
                 ddlXN = tempXN;
+                initUI();
             }
         });
     }
@@ -325,6 +326,8 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         tvTitle.setTextSize(18);
         tvTitle.setGravity(Gravity.CENTER);
         listview.setAdapter(adapter);
+        if (pbCjcx.getVisibility() == View.VISIBLE)
+            pbCjcx.setVisibility(View.INVISIBLE);
         startAnim();
     }
 

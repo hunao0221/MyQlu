@@ -110,7 +110,7 @@ public class HtmlUtils {
      *
      * @return
      */
-    public List<String> parseSelectList() {
+    public List<String> parseSelectYearList() {
         Document document = Jsoup.parse(response);
         Element select = document.getElementById("ddlXN");
         Elements options = select.select("option");

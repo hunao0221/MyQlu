@@ -75,4 +75,15 @@ public class BaseInfoDao {
         return delete != 0;
     }
 
+    public void drop(){
+        BaseInfoHelper helper = new BaseInfoHelper(mContext);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        db.execSQL("DROP TABLE IF EXISTS baseinfo");
+    }
+
+    public void createTable(){
+        BaseInfoHelper helper = new BaseInfoHelper(mContext);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        db.execSQL("create table baseinfo(_id integer primary key autoincrement,key varchar(50),value varchar(200))");
+    }
 }

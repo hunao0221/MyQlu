@@ -9,7 +9,11 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,10 +23,13 @@ import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.CourseBean;
+import com.hugo.myqlu.bean.ExamBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.CourseDao;
+import com.hugo.myqlu.dao.KaoshiDao;
 import com.hugo.myqlu.utils.HtmlUtils;
-import com.hugo.myqlu.utils.PareseKbFromHtml;
+import com.hugo.myqlu.utils.ParseKSInfoFromHtml;
+import com.hugo.myqlu.utils.ParseKbFromHtml;
 import com.hugo.myqlu.utils.SpUtil;
 import com.hugo.myqlu.utils.TextEncoderUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -56,12 +63,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     ProgressBar pbLogin;
     @Bind(R.id.tv_error)
     TextView tvError;
-    @Bind(R.id.tv_cancle)
-    TextView tvCancle;
-    @Bind(R.id.tv_ok)
-    TextView tvOk;
     @Bind(R.id.rootView)
     LinearLayout rootView;
+    @Bind(R.id.bt_login)
+    Button btLogin;
     private String mainUrl = "http://210.44.159.4";
     private String codeUrl = "http://210.44.159.4/CheckCode.aspx";
     private String loginUrl = "http://210.44.159.4/default2.aspx";
@@ -80,7 +85,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private AlertDialog dialog;
     private List<CourseBean> allCourseList;
     private SharedPreferences sp;
-    private String noCodeVIEWSTATE;
+    private String stuNameEncoding;
+    private List<ExamBean> ksInfoList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,14 +100,27 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     private void initData() {
         sp = SpUtil.getSp(mContext, "config");
-        noCodeVIEWSTATE = getString(R.string.noCodeVIEWSTATE);
     }
 
     private void initListener() {
-        tvOk.setOnClickListener(this);
         tvChange.setOnClickListener(this);
-        tvCancle.setOnClickListener(this);
         ivCodes.setOnClickListener(this);
+        btLogin.setOnClickListener(this);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+
+        //监听软键盘回车时间
+        etCode.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    //关闭软键盘
+                    imm.toggleSoftInput(
+                            InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    attemptLogin();
+                }
+                return true;
+            }
+        });
     }
 
     //加载验证码
@@ -111,13 +130,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 .execute(new BitmapCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
-                        System.out.println("验证码加载失败");
                         //应该给验证码设置一个图片
                     }
 
                     @Override
                     public void onResponse(Bitmap response) {
-                        System.out.println("验证码加载成功");
                         ivCodes.setImageBitmap(response);
                     }
                 });
@@ -126,7 +143,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     //登陆前检查
     private void attemptLogin() {
         View focusView = null;
-        System.out.println("检查登陆");
         userId = etUsername.getText().toString().trim();
         password = etPassword.getText().toString().trim();
         code = etCode.getText().toString().trim();
@@ -144,7 +160,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             focusView.requestFocus();
         } else {
             //向服务器请求登陆
-            System.out.println("请求服务器");
             requestLogin();
         }
     }
@@ -227,20 +242,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         stuXH = split[0];
         //用户的姓名
         stuName = split[1].replace("同学", "");
+        stuNameEncoding = TextEncoderUtils.encoding(stuName);
         //设置需要的url
         cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
-        System.out.println("url初始化成功");
         //初始化数据完成，保存至数据库
         //显示一个dialog：
     }
 
     private void showSaveDataDialog(String response) {
-        System.out.println("显示dialog");
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        builder.setTitle("正在同步数据...");
         View view = View.inflate(mContext, R.layout.dialog_save_data, null);
         builder.setView(view);
         dialog = builder.create();
@@ -275,7 +288,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void onError(Call call, Exception e) {
                         System.out.println(e.toString());
-                        System.out.println("课表请求失败");
                         dialog.dismiss();
                         Snackbar.make(rootView, "未知错误，重启APP", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
                             @Override
@@ -291,21 +303,42 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public void onResponse(String response) {
-                        System.out.println("请求课表成功");
-                        allCourseList = PareseKbFromHtml.getKB(response);
+                        allCourseList = ParseKbFromHtml.getKB(response);
                         if (allCourseList.size() == 0) {
                             dialog.dismiss();
                             Toast.makeText(mContext, "同步失败", Toast.LENGTH_SHORT).show();
                         } else {
-                            saveDataToDB();
+                            queryKS();
                         }
                     }
                 });
     }
 
+    private void queryKS() {
+        OkHttpUtils.get().url(kscxUrl)
+                .addParams("xh", stuXH)
+                .addParams("xm", stuNameEncoding)
+                .addParams("gnmkdm", "N121604")
+                .addHeader("Host", "210.44.159.4")
+                .addHeader("Referer", StuCenterUrl)
+                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36")
+                .build().execute(new StringCallback() {
+            @Override
+            public void onError(Call call, Exception e) {
+
+            }
+
+            @Override
+            public void onResponse(String response) {
+                //解析html，得到考试信息，保存到数据库
+                ksInfoList = ParseKSInfoFromHtml.parse(response);
+                saveDataToDB();
+            }
+        });
+    }
+
 
     private void saveDataToDB() {
-        System.out.println("正在保存数据到数据库");
         BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
         baseInfoDao.add("cjcxUrl", LoginActivity.cjcxUrl);
         baseInfoDao.add("kbcxUrl", LoginActivity.kbcxUrl);
@@ -331,18 +364,34 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             String courseTeacher = course.getCourseTeacher();
             String courseLocation = course.getCourseLocation();
             boolean isSucess = courseDao.add(courseName, courseTime, courstTimeDetail, courseTeacher, courseLocation);
+
             if (!isSucess) {
-                System.out.println("!isSucess");
-                dialog.dismiss();
                 saveSucess = false;
                 Toast.makeText(mContext, "保存课表失败", Toast.LENGTH_SHORT).show();
                 break;
             }
         }
+
+        //保存考试信息
+        KaoshiDao kaoshiDao = new KaoshiDao(mContext);
+        for (ExamBean exam : ksInfoList) {
+            String examName = exam.getExamName();
+            String examTime = exam.getExamTime();
+            String examLocation = exam.getExamLocation();
+            boolean addSuccess = kaoshiDao.add(examName, examTime, examLocation);
+            if (!addSuccess) {
+                dialog.dismiss();
+                saveSucess = false;
+                Toast.makeText(mContext, "保存考试信息失败", Toast.LENGTH_SHORT).show();
+                break;
+            }
+        }
+
         //数据保存成功
         if (saveSucess) {
             System.out.println("saveSucess");
             sp.edit().putBoolean("isFirstIn", false).commit();
+            allCourseList = null;
             startActivity(new Intent(mContext, MainActivity.class));
             dialog.dismiss();
             finish();
@@ -360,10 +409,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_ok:
+            case R.id.bt_login:
                 attemptLogin();
-                break;
-            case R.id.tv_cancle:
                 break;
             case R.id.tv_change:
                 changCodeImage();
