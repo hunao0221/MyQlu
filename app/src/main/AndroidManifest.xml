@@ -15,11 +15,11 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.SearchCjActivity"
             android:label="成绩" />
-        <activity android:name=".activity.ExamActivity"/>
+        <activity android:name=".activity.ExamActivity" />
         <activity android:name=".activity.SplashAvtivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LoginActivity" />
+        <activity
+            android:name=".activity.SchoolCardActivity"
+            android:label="@string/title_activity_school_card"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

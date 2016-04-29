@@ -16,7 +16,7 @@
         android:layout_height="130dp"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
-        android:src="@mipmap/login_logo" />
+        android:src="@mipmap/login_header_img" />
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

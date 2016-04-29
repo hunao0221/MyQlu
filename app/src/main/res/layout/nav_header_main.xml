@@ -11,11 +11,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
+    <com.hugo.myqlu.view.CircleImageView
         android:id="@+id/iv_user_head"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:background="@drawable/my_header_img"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:background="@mipmap/login_header_img"
         android:paddingTop="@dimen/nav_header_vertical_spacing" />
 
     <TextView

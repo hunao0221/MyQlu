@@ -1,10 +1,15 @@
 package com.hugo.myqlu.activity;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,7 +24,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hugo.myqlu.R;
@@ -29,7 +33,10 @@ import com.hugo.myqlu.dao.CourseDao;
 import com.hugo.myqlu.dao.KaoshiDao;
 import com.hugo.myqlu.utils.SpUtil;
 import com.hugo.myqlu.utils.WeekUtils;
+import com.hugo.myqlu.view.CircleImageView;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     RecyclerView couseList;
 
     private Toolbar toolbar;
-    private ImageView iv_user_heead;
+    private CircleImageView iv_user_heead;
     private Context mContext = this;
     private DrawerLayout drawer;
     private String stuXH;
@@ -87,7 +94,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View view = navigationView.getHeaderView(0);
-        iv_user_heead = (ImageView) view.findViewById(R.id.iv_user_head);
+        iv_user_heead = (CircleImageView) view.findViewById(R.id.iv_user_head);
         header_xh = (TextView) view.findViewById(R.id.header_xh);
         header_name = (TextView) view.findViewById(R.id.header_name);
     }
@@ -116,16 +123,6 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private void initListener() {
-        iv_user_heead.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -148,20 +145,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+        Message message = Message.obtain();
         if (id == R.id.nav_search_cj) {
-            // Handle the camera action
             //成绩查询
-            toSearchCjActivity();
+            handler.sendEmptyMessageDelayed(1, 500);
+//            toSearchCjActivity();
         } else if (id == R.id.nav_kscx) {
-            //新闻
-            Intent intent = new Intent(mContext, ExamActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_class_schedule) {
-            //课表
-            Intent intent = new Intent(mContext, ExamActivity.class);
-            intent.putExtra("kbcxUrl", kbcxUrl);
-            startActivity(intent);
+            //考试查询
+            handler.sendEmptyMessageDelayed(2, 500);
+        } else if (id == R.id.nav_school_card) {
+            //一卡通
+            handler.sendEmptyMessageDelayed(3, 500);
         } else if (id == R.id.nav_manage) {
 
         } else if (id == R.id.nav_share) {
@@ -173,6 +167,26 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    android.os.Handler handler = new android.os.Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    toSearchCjActivity();
+                    break;
+                case 2:
+                    Intent intent = new Intent(mContext, ExamActivity.class);
+                    startActivity(intent);
+                    break;
+                case 3:
+                    Intent cardIntent = new Intent(mContext, SchoolCardActivity.class);
+                    startActivity(cardIntent);
+                    break;
+
+            }
+        }
+    };
 
     //注销登录近视框
     private void showLogoutDialog() {
@@ -240,7 +254,6 @@ public class MainActivity extends AppCompatActivity
 
         private static final int NORMAL_ITEM = 0;
         private static final int WEEK_ITEM = 1;
-
 
         @Override
         public long getItemId(int position) {
@@ -332,7 +345,6 @@ public class MainActivity extends AppCompatActivity
             super.onScrollStateChanged(recyclerView, newState);
         }
     }
-
 
     /**
      * 获得当前是星期几
@@ -427,5 +439,64 @@ public class MainActivity extends AppCompatActivity
             }
             list = null;
         }
+    }
+
+    private void initListener() {
+        iv_user_heead.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //选择头像
+                Intent intent = new Intent(
+                        Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, 0);
+            }
+        });
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        ContentResolver resolver = getContentResolver();
+        if (resultCode == 0) {
+            try {
+                // 获得图片的uri
+                Uri originalUri = data.getData();
+                // 将图片内容解析成字节数组
+                byte[] bytes = readStream(resolver.openInputStream(Uri
+                        .parse(originalUri.toString())));
+                // 将字节数组转换为ImageView可调用的Bitmap对象
+                Bitmap bitmap = getPicFromBytes(bytes, null);
+                // //把得到的图片绑定在控件上显示
+                iv_user_heead.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                System.out.println("错误 ：" + e.getMessage());
+            }
+        }
+    }
+
+
+    public static Bitmap getPicFromBytes(byte[] bytes, BitmapFactory.Options opts) {
+        if (bytes != null)
+            if (opts != null)
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length,
+                        opts);
+            else
+                return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        return null;
+    }
+
+    public static byte[] readStream(InputStream inStream) throws Exception {
+        byte[] buffer = new byte[1024];
+        int len = -1;
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        while ((len = inStream.read(buffer)) != -1) {
+            outStream.write(buffer, 0, len);
+        }
+        byte[] data = outStream.toByteArray();
+        outStream.close();
+        inStream.close();
+        return data;
+
     }
 }

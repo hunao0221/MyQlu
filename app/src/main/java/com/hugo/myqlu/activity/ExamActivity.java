@@ -32,6 +32,8 @@ public class ExamActivity extends AppCompatActivity {
     Toolbar toolbar;
     @Bind(R.id.exam_list)
     RecyclerView examList;
+    @Bind(R.id.tv_info)
+    TextView tvInfo;
 
 
     private Context mContext = this;
@@ -79,10 +81,16 @@ public class ExamActivity extends AppCompatActivity {
         stuName = baseInfoDao.query("stuName");
         stuNameEncoding = TextEncoderUtils.encoding(stuName);
         password = baseInfoDao.query("password");
-
         KaoshiDao kaoshiDao = new KaoshiDao(mContext);
         examInfoList = kaoshiDao.queryAll();
-        initUI();
+        if (examInfoList.size() == 0) {
+            tvInfo.setVisibility(View.VISIBLE);
+        } else {
+            if (tvInfo.getVisibility() == View.VISIBLE) {
+                tvInfo.setVisibility(View.GONE);
+            }
+            initUI();
+        }
     }
 
     private void initUI() {

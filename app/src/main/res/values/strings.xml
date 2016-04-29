@@ -29,4 +29,5 @@
 
     </string>
     <string name="title_activity_class_schedule">ClassScheduleActivity</string>
+    <string name="title_activity_school_card">SchoolCardActivity</string>
 </resources>

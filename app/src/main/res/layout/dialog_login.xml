@@ -38,7 +38,7 @@
             android:imeActionId="@+id/login"
             android:imeActionLabel="Sign in"
             android:imeOptions="actionUnspecified"
-            android:inputType="textPassword"
+            android:inputType="numberPassword"
             android:maxLines="1"
             android:singleLine="true" />
 
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="验证码"
-                android:inputType="textWebEditText" />
+                android:inputType="number" />
         </android.support.design.widget.TextInputLayout>
 
         <LinearLayout
@@ -116,6 +116,7 @@
             android:layout_marginRight="24dp"
             android:layout_toLeftOf="@+id/tv_ok"
             android:layout_toStartOf="@+id/tv_ok"
+            android:clickable="true"
             android:text="取消"
             android:textColor="#2e8e27"
             android:textSize="16sp" />
@@ -129,6 +130,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginEnd="24dp"
             android:layout_marginRight="24dp"
+            android:clickable="true"
             android:text="登陆"
             android:textColor="#2e8e27" />
 
