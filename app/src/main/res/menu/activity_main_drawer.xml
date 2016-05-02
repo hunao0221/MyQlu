@@ -4,33 +4,20 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_search_cj"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@mipmap/ic_view_quilt_black_24dp"
             android:title="成绩查询" />
         <item
             android:id="@+id/nav_kscx"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@mipmap/ic_pageview_black_24dp"
             android:title="考试查询" />
         <item
             android:id="@+id/nav_school_card"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@mipmap/ic_account_balance_wallet_black_24dp"
             android:title="一卡通" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:id="@+id/nav_logout"
+            android:icon="@mipmap/ic_supervisor_account_black_24dp"
+            android:title="注销" />
     </group>
-
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_send"
-                android:title="注销" />
-        </menu>
-    </item>
 
 </menu>

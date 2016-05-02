@@ -25,6 +25,8 @@ public class ParseCardInfo {
         Element tr = trs.get(trs.size() - 1);
         String text = tr.text();
         String yuer = text.substring(text.indexOf("：") + 1, text.indexOf("元") + 1).trim();
+        String statu = text.substring(text.lastIndexOf("：") + 1, text.length()).trim();
+        infoMap.put("statu", statu);
         infoMap.put("yuer", yuer);
         return infoMap;
     }

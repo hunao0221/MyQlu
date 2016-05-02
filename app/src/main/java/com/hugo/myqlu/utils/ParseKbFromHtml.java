@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 解析课表，保存到List中
+ *
  * @auther Hugo
  * Created on 2016/4/23 8:56.
  */
@@ -45,19 +47,19 @@ public class ParseKbFromHtml {
                     String timeDetail = null;
                     switch (i) {
                         case 0:
-                            timeDetail = "第1,2节";
+                            timeDetail = "8:30-10:10";
                             break;
                         case 2:
-                            timeDetail = "第3,4节";
+                            timeDetail = "10:20-12:00";
                             break;
                         case 4:
-                            timeDetail = "第5,6节";
+                            timeDetail = "13:20-15:10";
                             break;
                         case 6:
-                            timeDetail = "第7,8节";
+                            timeDetail = "15:20-17:00";
                             break;
                         case 8:
-                            timeDetail = "第9,11节";
+                            timeDetail = "18:30-20:40";
                     }
 
                     Element colum = tr.child(j);
@@ -66,8 +68,6 @@ public class ParseKbFromHtml {
                         String text = colum.text();
                         //基于java的web开发(JSP/Sevlet) 周三第5,6节{第1-16周} 尹红丽 1号公教楼602
                         String[] strings = text.split("hu");
-                        System.out.println("text :" + text);
-                        System.out.println("text的长度 :" + strings.length);
                         String name = "";
                         if (strings.length > 4) {
                             name = strings[0] + "-" + strings[1].substring(strings[1].indexOf("|") + 1, strings[1].indexOf("}"));
@@ -76,12 +76,11 @@ public class ParseKbFromHtml {
                         } else {
                             name = strings[0];
                             if (strings[1].contains("单周")) {
-                                name = name + "-单周";
+                                name = name + " -单周";
                             } else if (strings[1].contains("双周")) {
-                                name = name + "-双周";
+                                name = name + " -双周";
                             }
                         }
-                        System.out.println("name :" + name);
                         course.setCourseName(name);
                         course.setCourseTime(String.valueOf(j));
                         course.setCourstTimeDetail(timeDetail);
@@ -91,10 +90,6 @@ public class ParseKbFromHtml {
                     }
                 }
             }
-        }
-
-        for (CourseBean course : courseList) {
-            System.out.println(course.toString());
         }
         return courseList;
     }

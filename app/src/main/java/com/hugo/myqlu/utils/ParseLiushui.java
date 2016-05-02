@@ -26,14 +26,14 @@ public class ParseLiushui {
             ZhangBean zhangBean = new ZhangBean();
             //交易时间
             String text = tr.child(0).text();
-            text = text.substring(text.indexOf(" ") + 1, text.length());
+            text = text.substring(text.indexOf(" ") + 1, text.length()).trim();
             zhangBean.setTime(text);
             //交易终端
-            zhangBean.setTerminal(tr.child(4).text());
+            zhangBean.setTerminal(tr.child(4).text().trim());
             //交易额
-            zhangBean.setTurnover(tr.child(6).text());
+            zhangBean.setTurnover(tr.child(6).text().trim());
             //现有余额
-            zhangBean.setBalance(tr.child(7).text());
+            zhangBean.setBalance(tr.child(7).text().trim());
             zhangList.add(zhangBean);
         }
         return zhangList;

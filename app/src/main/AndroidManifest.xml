@@ -31,7 +31,10 @@
         <activity
             android:name=".activity.SchoolCardActivity"
             android:label="@string/title_activity_school_card"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.SettingActivity"
+            android:label="设置"></activity>
     </application>
 
 </manifest>

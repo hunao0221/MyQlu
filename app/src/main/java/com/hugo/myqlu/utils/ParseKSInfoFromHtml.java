@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 获得考试情况，保存到List中
+ *
  * @auther Hugo
  * Created on 2016/4/28 12:04.
  */

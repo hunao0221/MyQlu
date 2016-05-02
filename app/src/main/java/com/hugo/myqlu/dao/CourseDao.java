@@ -89,15 +89,4 @@ public class CourseDao {
         return delete != 0;
     }
 
-    public void drop() {
-        CourseHelper helper = new CourseHelper(mContext, 1);
-        SQLiteDatabase db = helper.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS course");
-    }
-
-    public void creatTable() {
-        CourseHelper helper = new CourseHelper(mContext, 1);
-        SQLiteDatabase db = helper.getWritableDatabase();
-        db.execSQL("create table course(_id integer primary key autoincrement,name varchar(100),time varchar(50),timedetail varchar(200),teacher varchar(50),location varchar(200))");
-    }
 }

@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ChengjiBean;
@@ -33,6 +34,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import okhttp3.Call;
 
+/**
+ * 成绩查询
+ */
 public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     @Bind(R.id.spinner_year)
@@ -41,7 +45,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     Spinner spinnerXueqi;
     @Bind(R.id.spinner_mode)
     Spinner spinnerMode;
-
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.pb_cjcx)
@@ -74,9 +77,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     private String stuXH;
     private String noCodeVIEWSTATE;
     private String noCodeLoginUrl;
-    //成绩查询url，需要替换数据
     private static String cjcxUrl;
-    private String mainUrl;
 
 
     @Override
@@ -102,12 +103,10 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
 
     private void initData() {
         BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
-
         yearList = null;
         cjcxUrl = baseInfoDao.query("cjcxUrl");
         stuCenterUrl = baseInfoDao.query("StuCenterUrl");
         noCodeLoginUrl = baseInfoDao.query("noCodeLoginUrl");
-        mainUrl = baseInfoDao.query("mainUrl");
         XQVIEWSTATE = getString(R.string.XQVIEWSTATE);
         JUSTZXVIEWSTATE = getString(R.string.JUSTZXVIEWSTATE);
         JUSTXNVIEWSTATE = getString(R.string.JUSTXNVIEWSTATE);
@@ -124,6 +123,9 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         mode.add("在校");
     }
 
+    /**
+     * 查询成绩之前要先获得当前系统中的所有年份表
+     */
     private void initYearList() {
         if (pbCjcx.getVisibility() == View.INVISIBLE) {
             pbCjcx.setVisibility(View.VISIBLE);
@@ -133,28 +135,31 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 .addHeader("Host", "210.44.159.4")
                 .addHeader("Referer", stuCenterUrl)
                 .build()
-                .connTimeOut(3000)
+                .connTimeOut(2000)
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
                         //加载学年失败，原因：没有登录，或者已经掉线,静默登陆
                         if (stuXH != null && password != null) {
-                            System.out.println("获取年份失败，装备静默登陆");
+                            //利用无需验证码的登录界面自动登录
                             requestLoginByNoCode();
                         }
                     }
 
                     @Override
                     public void onResponse(String response) {
-                        // tvContent.setText(response);
-                        System.out.println("initYearList----onResponse");
+
                         HtmlUtils utils = new HtmlUtils(response);
+                        //解析得到年份表
                         yearList = utils.parseSelectYearList();
                         initSpinner();
                     }
                 });
     }
 
+    /**
+     * 自动登录
+     */
     private void requestLoginByNoCode() {
 
         OkHttpUtils.post().url(noCodeLoginUrl)
@@ -175,16 +180,21 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e) {
-                System.out.println("onError");
+                //自动登录失败
+                Toast.makeText(mContext, "登录失败", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onResponse(String response) {
+                //登录成功
                 initYearList();
             }
         });
     }
 
+    /**
+     * 下拉选择框
+     */
     private void initSpinner() {
 
         xueqiAdapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, xueqi);
@@ -282,7 +292,6 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
             title = ddlXN + "学年学习成绩";
         }
 
-        System.out.println(ddlXN + "----" + ddlXQ + "----" + selectMode);
         final PostFormBuilder post = OkHttpUtils.post();
 
         post.url(cjcxUrl)
@@ -298,18 +307,16 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e) {
-                System.out.println("onError");
+                Toast.makeText(mContext, "查询失败", Toast.LENGTH_SHORT).show();
                 System.out.println(e.getMessage().toString());
             }
 
             @Override
             public void onResponse(String response) {
-                System.out.println("onResponse--------checkoutFromWeb");
                 HtmlUtils cjUtils = new HtmlUtils(response);
                 cjList = cjUtils.parseCJTable();
                 //如果CJList的size == 1，表示没有成绩；
                 if (cjList.size() == 1) {
-                    System.out.println("没有成绩哦");
                     title = "当前条件没有成绩哦";
                 }
                 //还原数据

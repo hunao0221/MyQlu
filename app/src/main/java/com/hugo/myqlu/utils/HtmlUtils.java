@@ -100,7 +100,6 @@ public class HtmlUtils {
                 }
             }
             cjList.add(bean);
-            System.out.println(bean.toString());
         }
         return cjList;
     }

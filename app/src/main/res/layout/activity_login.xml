@@ -12,8 +12,8 @@
     tools:context="com.hugo.myqlu.activity.LoginActivity">
 
     <ImageView
-        android:layout_width="130dp"
-        android:layout_height="130dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:src="@mipmap/login_header_img" />
@@ -112,6 +112,7 @@
             android:id="@+id/tv_error"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
             android:text="请求超时,请重试"
             android:textColor="#aaff0000"
             android:textSize="16sp"
@@ -123,7 +124,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_marginRight="5dp"
-            android:text="登陆" />
+            android:text="登录" />
 
     </RelativeLayout>
 

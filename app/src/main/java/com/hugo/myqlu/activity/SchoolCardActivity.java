@@ -45,7 +45,6 @@ public class SchoolCardActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-
     @Bind(R.id.tv_name)
     TextView tvName;
     @Bind(R.id.tv_cardid)
@@ -123,7 +122,6 @@ public class SchoolCardActivity extends AppCompatActivity {
         dialog.show();
         dialog.setCanceledOnTouchOutside(false);
         initCodeImg();
-
     }
 
     private void initCodeImg() {
@@ -178,6 +176,7 @@ public class SchoolCardActivity extends AppCompatActivity {
      * 登录
      */
     private void requestLogin() {
+        pbLogin.setVisibility(View.VISIBLE);
         OkHttpUtils.post().url(loginUrl)
                 .addHeader("Host", "210.44.159.5")
                 .addHeader("Referer", "http://210.44.159.5/homeLogin.action")
@@ -193,6 +192,9 @@ public class SchoolCardActivity extends AppCompatActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
+                        if (pbLogin.getVisibility() == View.VISIBLE) {
+                            pbLogin.setVisibility(View.GONE);
+                        }
                         System.out.println("好像出错了哦");
                         if (tv_error.getVisibility() == View.INVISIBLE) {
                             tv_error.setVisibility(View.VISIBLE);
@@ -202,7 +204,9 @@ public class SchoolCardActivity extends AppCompatActivity {
 
                     @Override
                     public void onResponse(String response) {
-
+                        if (pbLogin.getVisibility() == View.VISIBLE) {
+                            pbLogin.setVisibility(View.GONE);
+                        }
                         View focusView = null;
                         System.out.println("onResponse");
                         if (response.contains("验证码不正确")) {

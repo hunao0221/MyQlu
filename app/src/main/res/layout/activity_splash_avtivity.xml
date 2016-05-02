@@ -6,13 +6,14 @@
     tools:context="com.hugo.myqlu.activity.SplashAvtivity">
 
     <ImageView
-        android:scaleType="fitCenter"
         android:id="@+id/iv_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@mipmap/splash_background480"
+        android:scaleType="fitCenter" />
 
     <TextView
-        android:id="@+id/tv_author"
+        android:id="@+id/tv_version"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

@@ -14,17 +14,12 @@ import android.widget.TextView;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ExamBean;
-import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.KaoshiDao;
-import com.hugo.myqlu.utils.TextEncoderUtils;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
 
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import okhttp3.Call;
 
 public class ExamActivity extends AppCompatActivity {
 
@@ -35,20 +30,7 @@ public class ExamActivity extends AppCompatActivity {
     @Bind(R.id.tv_info)
     TextView tvInfo;
 
-
     private Context mContext = this;
-    private String kscxUrl;
-    private String stuCenterUrl;
-    private String noCodeLoginUrl;
-    private String mainUrl;
-    private String xqviewstate;
-    private String justzxviewstate;
-    private String justxnviewstate;
-    private String noCodeVIEWSTATE;
-    private String stuXH;
-    private String password;
-    private String stuName;
-    private String stuNameEncoding;
     private List<ExamBean> examInfoList;
 
     @Override
@@ -65,22 +47,7 @@ public class ExamActivity extends AppCompatActivity {
         initLisitener();
     }
 
-
     private void initData() {
-        BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
-        kscxUrl = baseInfoDao.query("kscxUrl");
-        stuCenterUrl = baseInfoDao.query("StuCenterUrl");
-        noCodeLoginUrl = baseInfoDao.query("noCodeLoginUrl");
-        mainUrl = baseInfoDao.query("mainUrl");
-        xqviewstate = getString(R.string.XQVIEWSTATE);
-        justzxviewstate = getString(R.string.JUSTZXVIEWSTATE);
-        justxnviewstate = getString(R.string.JUSTXNVIEWSTATE);
-        noCodeVIEWSTATE = getString(R.string.noCodeVIEWSTATE);
-        //已保存的用户名和密码
-        stuXH = baseInfoDao.query("stuXH");
-        stuName = baseInfoDao.query("stuName");
-        stuNameEncoding = TextEncoderUtils.encoding(stuName);
-        password = baseInfoDao.query("password");
         KaoshiDao kaoshiDao = new KaoshiDao(mContext);
         examInfoList = kaoshiDao.queryAll();
         if (examInfoList.size() == 0) {
@@ -132,56 +99,6 @@ public class ExamActivity extends AppCompatActivity {
         }
     }
 
-    private void requestLoginByNoCode() {
-
-        OkHttpUtils.post().url(noCodeLoginUrl)
-                .addParams("__VIEWSTATE", noCodeVIEWSTATE)
-                .addParams("__VIEWSTATEGENERATOR", "89ADBA87")
-                .addParams("tname", "")
-                .addParams("tbtns", "")
-                .addParams("tnameXw", "yhdl")
-                .addParams("tbtnsXw", "yhdlyhdl|xwxsdl")
-                .addParams("txtYhm", stuXH) //学号
-                .addParams("txtXm", password) //不知道是什么，和密码一样
-                .addParams("txtMm", password)
-                .addParams("rblJs", "%D1%A7%C9%FA")
-                .addParams("btnDl", "%B5%C7+%C2%BC")
-                .addHeader("Referer", "http://210.44.159.4/default6.aspx")
-                .addHeader("Host", "210.44.159.4")
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36")
-                .build().execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e) {
-                System.out.println("onError");
-            }
-
-            @Override
-            public void onResponse(String response) {
-                queryKS();
-            }
-        });
-    }
-
-    private void queryKS() {
-        OkHttpUtils.get().url(kscxUrl)
-                .addParams("xh", stuXH)
-                .addParams("xm", stuNameEncoding)
-                .addParams("gnmkdm", "N121604")
-                .addHeader("Host", "210.44.159.4")
-                .addHeader("Referer", stuCenterUrl)
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.75 Safari/537.36")
-                .build().execute(new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e) {
-
-            }
-
-            @Override
-            public void onResponse(String response) {
-
-            }
-        });
-    }
 
     private void initLisitener() {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

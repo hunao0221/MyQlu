@@ -48,7 +48,6 @@ import okhttp3.Response;
 
 public class LoginActivity extends Activity implements View.OnClickListener {
 
-
     @Bind(R.id.et_username)
     EditText etUsername;
     @Bind(R.id.et_password)
@@ -68,14 +67,23 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     @Bind(R.id.bt_login)
     Button btLogin;
     private String mainUrl = "http://210.44.159.4";
+    //验证码
     private String codeUrl = "http://210.44.159.4/CheckCode.aspx";
+    //登录
     private String loginUrl = "http://210.44.159.4/default2.aspx";
+    //登出
     private String logoutUrl = "http://210.44.159.4/logout.aspx";
-    private static String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
-    private static String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
-    private static String kscxUrl = "http://210.44.159.4/xskscx.aspx?xh=stuxh&xm=stuname%90&gnmkdm=N121604";
-    private static String kbcxUrl = "http://210.44.159.4/xskbcx.aspx?xh=stuxh&xm=stuname&gnmkdm=N121603";
+    //无需验证码登陆的url
     private String noCodeLoginUrl = "http://210.44.159.4/default6.aspx";
+    //下面的url都需要进行替换修改
+    //个人中心
+    private static String StuCenterUrl = "http://210.44.159.4/xs_main.aspx?xh=stuxh";
+    //成绩查询
+    private static String cjcxUrl = "http://210.44.159.4/xscj.aspx?xh=stuxh&xm=stuname&gnmkdm=N121605";
+    //考试查询
+    private static String kscxUrl = "http://210.44.159.4/xskscx.aspx?xh=stuxh&xm=stuname%90&gnmkdm=N121604";
+    //课程表查询
+    private static String kbcxUrl = "http://210.44.159.4/xskbcx.aspx?xh=stuxh&xm=stuname&gnmkdm=N121603";
     private String userId;
     private String password;
     private String code;
@@ -83,8 +91,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private String stuXH;
     private String stuName;
     private AlertDialog dialog;
+    //所有课程
     private List<CourseBean> allCourseList;
     private SharedPreferences sp;
+    //中文姓名的编码
     private String stuNameEncoding;
     private List<ExamBean> ksInfoList;
 
@@ -107,15 +117,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         ivCodes.setOnClickListener(this);
         btLogin.setOnClickListener(this);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-
-        //监听软键盘回车时间
+        //监听软键盘回车键
         etCode.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     //关闭软键盘
-                    imm.toggleSoftInput(
-                            InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                    imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                     attemptLogin();
                 }
                 return true;
@@ -130,17 +138,18 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 .execute(new BitmapCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
-                        //应该给验证码设置一个图片
+                        //应该给验证码设置一个默认图片（错误图片）；
                     }
 
                     @Override
                     public void onResponse(Bitmap response) {
+                        //设置验证码
                         ivCodes.setImageBitmap(response);
                     }
                 });
     }
 
-    //登陆前检查
+    //登录前检查输入的数据
     private void attemptLogin() {
         View focusView = null;
         userId = etUsername.getText().toString().trim();
@@ -159,23 +168,25 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         if (focusView != null) {
             focusView.requestFocus();
         } else {
-            //向服务器请求登陆
+            //向服务器请求登录
             requestLogin();
         }
     }
 
     /**
-     * 像服务器模拟登陆
+     * 向服务器模拟登陆
      */
     private void requestLogin() {
         int visibility = tvError.getVisibility();
         if (visibility == View.VISIBLE) {
             tvError.setVisibility(View.INVISIBLE);
         }
+
         pbLogin.setVisibility(View.VISIBLE);
         final PostFormBuilder post = OkHttpUtils.post();
         post.url(loginUrl);
         post.tag(this);
+        //下面数据抓包可以得到
         post.addParams("__VIEWSTATE", "dDwtMTMxNjk0NzYxNTs7PpK7CYMIAY8gja8M8G8YpGL8ZEAL");
         post.addParams("__VIEWSTATEGENERATOR", "92719903");
         post.addParams("txtUserName", userId);
@@ -214,9 +225,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         if (focusView != null) {
                             focusView.requestFocus();
                             pbLogin.setVisibility(View.INVISIBLE);
+                            //切换验证码
                             changCodeImage();
                         } else {
-                            //登陆成功
+                            //登录成功
                             pbLogin.setVisibility(View.INVISIBLE);
                             //初始化用户数据
 //                            initURL(response);
@@ -225,6 +237,17 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                         }
                     }
                 });
+    }
+
+    private void showSaveDataDialog(String response) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        View view = View.inflate(mContext, R.layout.dialog_save_data, null);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+        dialog.setCanceledOnTouchOutside(false);
+        initURL(response);
+        initCourseData();
     }
 
     /**
@@ -243,26 +266,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         //用户的姓名
         stuName = split[1].replace("同学", "");
         stuNameEncoding = TextEncoderUtils.encoding(stuName);
-        //设置需要的url
+        //需要的url
         cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
         StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
-        //初始化数据完成，保存至数据库
-        //显示一个dialog：
     }
 
-    private void showSaveDataDialog(String response) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        View view = View.inflate(mContext, R.layout.dialog_save_data, null);
-        builder.setView(view);
-        dialog = builder.create();
-        dialog.show();
-        dialog.setCanceledOnTouchOutside(false);
-        initURL(response);
-        initCourseData();
-    }
-
+    /**
+     * 获得课表
+     */
     private void initCourseData() {
         if (stuName == null || stuXH == null) {
             return;
@@ -281,17 +294,16 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public String parseNetworkResponse(Response response) throws IOException {
-                        System.out.println(response.code());
                         return super.parseNetworkResponse(response);
                     }
 
                     @Override
                     public void onError(Call call, Exception e) {
-                        System.out.println(e.toString());
                         dialog.dismiss();
                         Snackbar.make(rootView, "未知错误，重启APP", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+                                //重新启动app
                                 Intent i = getBaseContext().getPackageManager()
                                         .getLaunchIntentForPackage(getBaseContext().getPackageName());
                                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -303,18 +315,20 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public void onResponse(String response) {
+
                         allCourseList = ParseKbFromHtml.getKB(response);
                         if (allCourseList.size() == 0) {
                             dialog.dismiss();
                             Toast.makeText(mContext, "同步失败", Toast.LENGTH_SHORT).show();
                         } else {
-                            queryKS();
+                            initKSData();
                         }
                     }
                 });
     }
 
-    private void queryKS() {
+    //获得考试
+    private void initKSData() {
         OkHttpUtils.get().url(kscxUrl)
                 .addParams("xh", stuXH)
                 .addParams("xm", stuNameEncoding)
@@ -325,7 +339,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e) {
-
+                //失败
             }
 
             @Override
@@ -338,7 +352,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
 
+    /**
+     * 保存数据数据库中
+     */
     private void saveDataToDB() {
+        //基本信息
         BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
         baseInfoDao.add("cjcxUrl", LoginActivity.cjcxUrl);
         baseInfoDao.add("kbcxUrl", LoginActivity.kbcxUrl);
@@ -347,15 +365,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         baseInfoDao.add("stuName", stuName);
         baseInfoDao.add("stuXH", stuXH);
         baseInfoDao.add("noCodeLoginUrl", noCodeLoginUrl);
-
         baseInfoDao.add("stuXH", stuXH);
         baseInfoDao.add("mainUrl", mainUrl);
         baseInfoDao.add("logoutUrl", logoutUrl);
-        //明文保存密码不安全，但是向服务器提交的时候同样是明文，没办法。。。
         baseInfoDao.add("password", password);
-        CourseDao courseDao = new CourseDao(mContext);
 
-        //保存课表到数据库中
+
+        //课表
+        CourseDao courseDao = new CourseDao(mContext);
         boolean saveSucess = true;
         for (CourseBean course : allCourseList) {
             String courseName = course.getCourseName();
@@ -364,7 +381,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             String courseTeacher = course.getCourseTeacher();
             String courseLocation = course.getCourseLocation();
             boolean isSucess = courseDao.add(courseName, courseTime, courstTimeDetail, courseTeacher, courseLocation);
-
             if (!isSucess) {
                 saveSucess = false;
                 Toast.makeText(mContext, "保存课表失败", Toast.LENGTH_SHORT).show();
@@ -399,12 +415,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     //切换验证码
-
     public void changCodeImage() {
         codeUrl += '?';
         showCodeimage();
     }
-
 
     @Override
     public void onClick(View v) {
