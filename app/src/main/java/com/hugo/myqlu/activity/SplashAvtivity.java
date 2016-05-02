@@ -151,8 +151,9 @@ public class SplashAvtivity extends AppCompatActivity {
                 .execute(new FileCallBack(path, "myQluUpdate.apk") {
                     @Override
                     public void inProgress(float progress, long total) {
+                        System.out.println(total + "------" + progress * total);
                         pbDown.setMax((int) total);
-                        pbDown.setProgress((int) (progress * 100));
+                        pbDown.setProgress((int) (progress * total));
                     }
 
                     @Override
