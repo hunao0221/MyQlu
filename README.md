@@ -16,6 +16,7 @@
 ![主页](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-23.png)
 ![侧边栏](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-15.png)
 ![成绩查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-04.png)
+![考试查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/ks.png)
 ![流水查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-30-56.png)
 ![挂失](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-30-48.png)
 
