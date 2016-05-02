@@ -10,7 +10,7 @@
 
 ##下载：
 - [Github下载](https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.1.apk)
-- 百度云：[http://pan.baidu.com/s/1hsbIEmo](http://pan.baidu.com/s/1hsbIEmo)
+- 百度云：[http://pan.baidu.com/s/1nvKnKql](http://pan.baidu.com/s/1nvKnKql)
 
 ## 应用截图
 ![主页](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-23.png)
