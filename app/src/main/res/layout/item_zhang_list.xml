@@ -16,7 +16,7 @@
             android:id="@+id/tv_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="1.5"
             android:gravity="center"
             android:text="交易时间" />
 
@@ -24,7 +24,7 @@
             android:id="@+id/terminal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center"
             android:text="系统名称" />
 

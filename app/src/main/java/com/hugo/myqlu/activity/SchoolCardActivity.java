@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,9 +26,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ZhangBean;
+import com.hugo.myqlu.dao.BaseInfoDao;
+import com.hugo.myqlu.utils.HistoryDayUtil;
 import com.hugo.myqlu.utils.ParseCardInfo;
+import com.hugo.myqlu.utils.ParseHistoryInfo;
 import com.hugo.myqlu.utils.ParseLiushui;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.BitmapCallback;
@@ -57,14 +63,20 @@ public class SchoolCardActivity extends AppCompatActivity {
     ListView listview;
     @Bind(R.id.tv_null_data)
     TextView tvNullData;
-    @Bind(R.id.fab)
-    FloatingActionButton fab;
     @Bind(R.id.root_view)
     CoordinatorLayout rootView;
     @Bind(R.id.tv_total)
     TextView tvTotal;
     @Bind(R.id.tv_date)
     TextView tvDate;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
+    @Bind(R.id.fab_query)
+    FloatingActionButton fabQuery;
+    @Bind(R.id.fab_menu)
+    FloatingActionsMenu fabMenu;
+    @Bind(R.id.tv_total_num)
+    TextView tvTotalNum;
 
     private Context mContext = this;
     private EditText etUsername;
@@ -77,6 +89,10 @@ public class SchoolCardActivity extends AppCompatActivity {
     private String mainUrl = "http://210.44.159.5/accountcardUser.action";
     private String liushuiUrl = "http://210.44.159.5/accounttodatTrjnObject.action";
     private String doLostUrl = "http://210.44.159.5/accountDoLoss.action";
+    private String historyUrl = "http://210.44.159.5/accounthisTrjn.action";
+    private String host = "http://210.44.159.5";
+    private String lasturl = "http://210.44.159.5/accounthisTrjn.action";
+    private String nextPageUrl = "http://210.44.159.5/accountconsubBrows.action";
     private TextView tv_change;
     private TextView tvOk;
     private String userId;
@@ -91,16 +107,36 @@ public class SchoolCardActivity extends AppCompatActivity {
     private TextView tv_cancle;
     private EditText lost_account;
     private EditText lost_password;
+    private ListView list_history;
+    private String mainAction;
+    private List<String> dayList;
+    private AlertDialog historyDialog;
+    private String queryAction;
+    private String lastAction;
+    private List<ZhangBean> historyLiushui;
+    private AlertDialog waitDialog;
+    private int totalPages;
+    private MyAdapte adapte = null;
+    private String inputEndDate;
+    private String inputStartDate;
+    private int nextPage;
+    private String stuXH;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_school_card);
         ButterKnife.bind(this);
-        toolbar.setTitle("今日消费");
+        toolbar.setTitle("一卡通");
         setSupportActionBar(toolbar);
+        initData();
         showLoginDialog();
         initListener();
+    }
+
+    private void initData() {
+        BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
+        stuXH = baseInfoDao.query("stuXH");
     }
 
     private void showLoginDialog() {
@@ -109,6 +145,7 @@ public class SchoolCardActivity extends AppCompatActivity {
         builder.setCancelable(false);
         View view = View.inflate(mContext, R.layout.dialog_login, null);
         etUsername = ButterKnife.findById(view, R.id.et_username);
+        etUsername.setText(stuXH);
         etPassword = ButterKnife.findById(view, R.id.et_password);
         etCode = ButterKnife.findById(view, R.id.et_code);
         ivCodes = ButterKnife.findById(view, R.id.iv_codes);
@@ -146,7 +183,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     //登陆前检查
     private void attemptLogin() {
@@ -257,7 +293,8 @@ public class SchoolCardActivity extends AppCompatActivity {
                 baseInfoMap = ParseCardInfo.parse(response);
                 if (baseInfoMap.size() != 0) {
                     initTitleUI();
-                    getCardData();
+                    getTodayData();
+                    historyInfo();
                 }
             }
         });
@@ -275,13 +312,13 @@ public class SchoolCardActivity extends AppCompatActivity {
     /**
      * 获得当日流水
      */
-    private void getCardData() {
+    private void getTodayData() {
         OkHttpUtils.post().url(liushuiUrl)
                 .addHeader("Host", "210.44.159.5")
                 .addHeader("Origin", "http://210.44.159.5")
                 .addHeader("Referer", liushuiUrl)
                 .addParams("account", account)
-                .addParams("inputObject", "all")
+                .addParams("inputObject", "15")
                 .addParams("Submit", "+%C8%B7+%B6%A8+")
                 .build().execute(new StringCallback() {
 
@@ -292,35 +329,37 @@ public class SchoolCardActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(String response) {
-                zhangList = ParseLiushui.parse(response);
+                ParseLiushui parseLiushui = new ParseLiushui(response);
+                zhangList = parseLiushui.parse();
                 if (zhangList.size() == 0) {
                     tvNullData.setVisibility(View.VISIBLE);
                 } else {
-                    float total = 0;
-                    for (ZhangBean zhang : zhangList) {
-                        String turnover = zhang.getTurnover();
-                        float aFloat = Float.parseFloat(turnover);
-                        if (aFloat < 0.00) {
-                            total += aFloat;
-                        }
-                    }
-                    System.out.println("今日消费 ：" + total);
-                    tvTotal.setText("您今日一共消费了 ： " + total + "元");
+                    String total = parseLiushui.getTotal().trim();
+                    tvTotal.setText("您今日一共消费了 : ");
+                    tvTotalNum.setText(total + "元");
                     initListview();
                 }
             }
         });
-
     }
 
     /**
      * 账目list
      */
     private void initListview() {
-        listview.setAdapter(new MyAdapte());
+        if (adapte != null) {
+            adapte = null;
+        }
+        adapte = new MyAdapte(zhangList);
+        listview.setAdapter(adapte);
     }
 
     class MyAdapte extends BaseAdapter {
+        private List<ZhangBean> zhangList;
+
+        public MyAdapte(List<ZhangBean> zhangList) {
+            this.zhangList = zhangList;
+        }
 
         @Override
         public int getCount() {
@@ -369,6 +408,32 @@ public class SchoolCardActivity extends AppCompatActivity {
         TextView turnover;
     }
 
+    class MyOnScrollListener implements AbsListView.OnScrollListener {
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            switch (scrollState) {
+                case SCROLL_STATE_FLING:
+                    fabMenu.setVisibility(View.INVISIBLE);
+                    break;
+                case SCROLL_STATE_IDLE:
+                    fabMenu.setVisibility(View.VISIBLE);
+                    break;
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            View lastVisibleItemView = listview.getChildAt(listview.getChildCount() - 1);
+            if ((firstVisibleItem + visibleItemCount) == totalItemCount) {
+                if (lastVisibleItemView != null && lastVisibleItemView.getBottom() == listview.getHeight()) {
+                    nextPage++;
+                    requestNextPage();
+                }
+            }
+        }
+    }
+
     private void initListener() {
         MyClickListener listener = new MyClickListener();
         tv_change.setOnClickListener(listener);
@@ -376,6 +441,8 @@ public class SchoolCardActivity extends AppCompatActivity {
         tv_cancle.setOnClickListener(listener);
         tvOk.setOnClickListener(listener);
         fab.setOnClickListener(listener);
+        fabMenu.setOnClickListener(listener);
+        tvDate.setOnClickListener(listener);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         //监听软键盘回车时间
         etCode.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -391,21 +458,10 @@ public class SchoolCardActivity extends AppCompatActivity {
                 return true;
             }
         });
+        fabQuery.setOnClickListener(listener);
     }
 
-    private DialogInterface.OnKeyListener keylistener = new DialogInterface.OnKeyListener() {
-        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-    };
-
-
     class MyClickListener implements View.OnClickListener {
-
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
@@ -423,6 +479,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                     exit();
                     break;
                 case R.id.fab:
+                    clearFocus();
                     if (baseInfoMap == null) {
                         if (baseInfoMap == null) {
                             Snackbar.make(rootView, "您还没有登录", Snackbar.LENGTH_LONG).setAction("登录", new View.OnClickListener() {
@@ -435,9 +492,268 @@ public class SchoolCardActivity extends AppCompatActivity {
                     } else
                         showLockCardDialog();
                     break;
+                case R.id.fab_query:
+                    //显示历史查询弹窗
+                    clearFocus();
+                    if (dayList.size() == 0) {
+                        Toast.makeText(mContext, "初始化数据,请稍后", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    showHistoryDialog();
+                    break;
+                case R.id.tv_date:
+                    getTodayData();
+                    break;
             }
         }
 
+    }
+
+    /**
+     * 历史查询：
+     * 1.获得主页的action,以及查询的type，15表示查询消费
+     * 2.获得查询界面的action，以及查询的条件，三天，一周。。。
+     * 3.请求，会进入等待页面，得到等待页面的action
+     * 4.再次请求，即可得到历史数据
+     */
+    private void showHistoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        View view = View.inflate(mContext, R.layout.dialog_history, null);
+        list_history = (ListView) view.findViewById(R.id.list_history);
+        builder.setView(view);
+        historyDialog = builder.create();
+        historyDialog.show();
+        HistoryAdapter historyAdapter = new HistoryAdapter();
+        list_history.setAdapter(historyAdapter);
+        list_history.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                historyDialog.dismiss();
+                showWaitDialog();
+                int count = 0;
+                switch (position) {
+                    case 0:
+                        //三天
+                        tvTotal.setText("您" + dayList.get(position) + "消费了：");
+                        count = 3;
+                        break;
+                    case 1:
+                        //一周
+                        tvTotal.setText("您" + dayList.get(position) + "消费了：");
+                        count = 7;
+                        break;
+                    case 2:
+                        //一月
+                        tvTotal.setText("您" + dayList.get(position) + "消费了：");
+                        count = 30;
+                        break;
+                    case 3:
+                        //上月
+                        tvTotal.setText("您" + dayList.get(position) + "消费了：");
+                        count = 1;
+                        break;
+                    case 4:
+                        //上上月
+                        tvTotal.setText("您" + dayList.get(position) + "消费了：");
+                        count = 2;
+                        break;
+                    case 5:
+                        //上上上月
+                        tvTotal.setText("您" + dayList.get(position) + "消费了：");
+                        count = 3;
+                        break;
+                }
+                if (position < 3) {
+                    inputEndDate = HistoryDayUtil.getEndDate();
+                    inputStartDate = HistoryDayUtil.getStartDate(count);
+                } else {
+                    inputEndDate = HistoryDayUtil.getMonthEnd(count);
+                    inputStartDate = HistoryDayUtil.getMonthStart(count);
+                }
+                nextPage = 1;
+                //查询历史消费
+                queryHistoryMustInfo();
+            }
+        });
+    }
+
+    /**
+     * 获得主页的action
+     */
+    private void historyInfo() {
+        OkHttpUtils.get().url(historyUrl)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        Toast.makeText(mContext, "链接失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        mainAction = ParseHistoryInfo.getMainAction(response);
+                        getHistoryHomePage();
+                    }
+                });
+    }
+
+    /**
+     * 获得查询的页面的action，以及查询条件
+     */
+    private void getHistoryHomePage() {
+        OkHttpUtils.post().url(host + mainAction)
+                .addHeader("Host", "210.44.159.5")
+                .addHeader("Referer", historyUrl)
+                .addParams("account", account)
+                .addParams("inputObject", "15")
+                .addParams("Submit", "+%C8%B7+%B6%A8+")
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        System.out.println("获取失败");
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        queryAction = ParseHistoryInfo.getQueryAction(response);
+                        dayList = ParseHistoryInfo.getDayList(response);
+                    }
+                });
+    }
+
+    /**
+     * 请求下一页的数据
+     */
+    private synchronized void requestNextPage() {
+        if (nextPage > totalPages) {
+            return;
+        }
+        OkHttpUtils.post().url(nextPageUrl)
+                .addHeader("Host", "210.44.159.5")
+                .addHeader("Referer", "nextPageUrl")
+                .addParams("inputStartDate", inputStartDate)
+                .addParams("inputEndDate", inputEndDate)
+                .addParams("pageNum", nextPage + "")
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        List<ZhangBean> nextInfo = ParseHistoryInfo.get(response);
+                        for (ZhangBean next : nextInfo) {
+                            historyLiushui.add(historyLiushui.size(), next);
+                        }
+                        adapte.notifyDataSetChanged();
+                    }
+                });
+    }
+
+    /**
+     * 获得等待页面的action
+     */
+    private void queryHistoryMustInfo() {
+        String cotinue = queryAction.substring(queryAction.indexOf("=") + 1, queryAction.length()).trim();
+        OkHttpUtils.post().url(host + queryAction)
+                .addHeader("Host", "210.44.159.5")
+                .addHeader("Referer", host + mainAction)
+                .addParams("inputStartDate", inputStartDate)
+                .addParams("inputEndDate", inputEndDate)
+                .addParams("__continue", cotinue)
+                .build()
+                .execute(new StringCallback() {
+
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        Toast.makeText(mContext, "链接获取失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        lastAction = ParseHistoryInfo.getLastAction(response);
+                        queryHistoryConsumption();
+                    }
+                });
+    }
+
+    /**
+     * 利用等待页面获取的action查询历史消费信息
+     */
+    private void queryHistoryConsumption() {
+        OkHttpUtils.post().url(lasturl + lastAction)
+                .addHeader("Host", "210.44.159.5")
+                .addHeader("Referer", "lasturl+lastAction")
+                .addParams("__continue", lastAction.substring(lastAction.indexOf("=") + 1, lastAction.length()).trim())
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        Toast.makeText(mContext, "查询失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        String historyTotal = ParseHistoryInfo.getHistoryTotal(response);
+                        historyLiushui = ParseHistoryInfo.get(response);
+                        totalPages = ParseHistoryInfo.getTotalPages(response);
+                        waitDialog.dismiss();
+                        tvTotalNum.setText(historyTotal + "元");
+                        if (adapte != null) {
+                            adapte = null;
+                        }
+                        adapte = new MyAdapte(historyLiushui);
+                        listview.setAdapter(adapte);
+                        listview.setOnScrollListener(new MyOnScrollListener());
+                    }
+                });
+    }
+
+    /**
+     * 查询等待dialog
+     */
+    private void showWaitDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+        ProgressBar pb_wait = new ProgressBar(mContext);
+        builder.setView(pb_wait);
+        waitDialog = builder.create();
+        waitDialog.show();
+    }
+
+    class HistoryAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return dayList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return dayList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View view = View.inflate(mContext, R.layout.item_history, null);
+            TextView tv_history = (TextView) view.findViewById(R.id.tv_history);
+            tv_history.setText(dayList.get(position));
+            return view;
+        }
+
+    }
+
+    public void clearFocus() {
+        fab.clearFocus();
+        fabMenu.clearFocus();
+        fabMenu.collapse();
     }
 
     /**
@@ -485,7 +801,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
-                        System.out.println("错误");
                         System.out.println(e.toString());
                     }
 
@@ -493,7 +808,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         String messenge = "";
                         if (response.contains("操作成功")) {
-                            System.out.println("挂失成功");
                             messenge = "您已挂失成功";
                         } else if (response.contains("密码错误")) {
                             messenge = "密码错误";
@@ -524,4 +838,17 @@ public class SchoolCardActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
     }
+
+    /**
+     * 禁用返回键
+     */
+    private DialogInterface.OnKeyListener keylistener = new DialogInterface.OnKeyListener() {
+        public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
 }

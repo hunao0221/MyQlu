@@ -20,15 +20,17 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
+
             <TextView
                 android:id="@+id/tv_date"
                 style="@android:style/TextAppearance.DeviceDefault"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="20dp"
-                android:textSize="22sp"
-                tools:targetApi="lollipop" />
+                android:textSize="22sp" />
+
 
         </android.support.v7.widget.Toolbar>
 
@@ -37,11 +39,33 @@
 
     <include layout="@layout/content_school_card" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/fab_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_lock_idle_lock" />
+        app:fab_labelStyle="@style/menu_labels_style"
+        app:fab_labelsPosition="left">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_icon="@android:drawable/ic_lock_idle_lock"
+            app:fab_size="mini"
+            app:fab_title="挂失" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_query"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorPrimary"
+            app:fab_icon="@android:drawable/ic_menu_search"
+            app:fab_size="mini"
+            app:fab_title="历史查询" />
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
+
+
 </android.support.design.widget.CoordinatorLayout>

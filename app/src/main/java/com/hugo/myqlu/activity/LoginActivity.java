@@ -317,7 +317,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     public void onResponse(String response) {
 
                         allCourseList = ParseKbFromHtml.getKB(response);
-                        if (allCourseList.size() == 0) {
+                        if (allCourseList == null) {
                             dialog.dismiss();
                             Toast.makeText(mContext, "同步失败", Toast.LENGTH_SHORT).show();
                         } else {
