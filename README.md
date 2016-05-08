@@ -10,16 +10,16 @@
 
 ##更新：
 ####2016/05/08 MyQlu1.0.2
-> 1.新增一卡通消费历史查询
-2.考试查询下拉刷新
-3.优化UI细节
+> 1.新增一卡通消费历史查询  
+> 2.考试查询下拉刷新  
+> 3.优化UI细节
 
 ##下载：
-###1.0.2
+####1.0.2
 >- <http://pan.baidu.com/s/1kV8MRx9>
 - <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.2.apk>
 
-###1.0.1
+####1.0.1
 >- <http://pan.baidu.com/s/1dFNSlFV>
 - <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.1.apk>
 
