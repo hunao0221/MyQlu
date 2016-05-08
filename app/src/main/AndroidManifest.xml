@@ -17,7 +17,7 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.SearchCjActivity"
+            android:name=".activity.ScoreActivity"
             android:label="成绩" />
         <activity android:name=".activity.ExamActivity" />
         <activity android:name=".activity.SplashAvtivity">

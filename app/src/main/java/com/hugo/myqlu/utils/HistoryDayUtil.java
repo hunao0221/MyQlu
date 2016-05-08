@@ -13,7 +13,6 @@ public class HistoryDayUtil {
         strDate.add(strDate.DATE, 0);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String format = sdf.format(strDate.getTime());
-        System.out.println("endDate :" + format);
         return format;
     }
 
@@ -22,7 +21,6 @@ public class HistoryDayUtil {
         strDate.add(strDate.DATE, -count);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String format = sdf.format(strDate.getTime());
-        System.out.println("startDate :" + format);
         return format;
     }
 
@@ -32,7 +30,6 @@ public class HistoryDayUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         strDate.set(Calendar.DAY_OF_MONTH, 1);
         String format = sdf.format(strDate.getTime());
-        System.out.println("上个月的开始 ：" + format);
         return format;
     }
 
@@ -42,7 +39,6 @@ public class HistoryDayUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         strDate.set(Calendar.DAY_OF_MONTH, strDate.getActualMaximum(Calendar.DAY_OF_MONTH));
         String format = sdf.format(strDate.getTime());
-        System.out.println("上个月的结束 ：" + format);
         return format;
     }
 

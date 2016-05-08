@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity
 
     @Bind(R.id.couse_list)
     RecyclerView couseList;
+    @Bind(R.id.tv_null_course)
+    TextView tvNullCourse;
 
     private Toolbar toolbar;
     private ImageView iv_user_heead;
@@ -69,7 +72,6 @@ public class MainActivity extends AppCompatActivity
         initData();
         initView();
         initUI();
-        initListener();
     }
 
     private void initView() {
@@ -127,6 +129,9 @@ public class MainActivity extends AppCompatActivity
     private void initUI() {
         header_name.setText(stuName);
         header_xh.setText(stuXH);
+        if (allCourse.size() == 0) {
+            tvNullCourse.setVisibility(View.VISIBLE);
+        }
         LinearLayoutManager manager = new LinearLayoutManager(this);
         couseList.setLayoutManager(manager);
         adapter = new MyAdapter();
@@ -135,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         //  couseList.addOnScrollListener(new MyScrollListener());
     }
 
-    android.os.Handler handler = new android.os.Handler() {
+    Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -190,7 +195,7 @@ public class MainActivity extends AppCompatActivity
      * 跳转到成绩查询页面
      */
     private void toSearchCjActivity() {
-        Intent intent = new Intent(mContext, SearchCjActivity.class);
+        Intent intent = new Intent(mContext, ScoreActivity.class);
         startActivity(intent);
     }
 
@@ -300,21 +305,6 @@ public class MainActivity extends AppCompatActivity
         return time;
     }
 
-
-    private void initListener() {
-//        iv_user_heead.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                //选择头像
-//                Intent intent = new Intent(
-//                        Intent.ACTION_PICK,
-//                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//                startActivityForResult(intent, 0);
-//            }
-//        });
-    }
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -332,7 +322,7 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-
+    
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -341,7 +331,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_search_cj) {
             //成绩查询
             handler.sendEmptyMessageDelayed(1, 500);
-//            toSearchCjActivity();
         } else if (id == R.id.nav_kscx) {
             //考试查询
             handler.sendEmptyMessageDelayed(2, 500);

@@ -37,7 +37,7 @@ import okhttp3.Call;
 /**
  * 成绩查询
  */
-public class SearchCjActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+public class ScoreActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     @Bind(R.id.spinner_year)
     Spinner spinnerYear;
@@ -84,13 +84,15 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_search_cj);
+        setContentView(R.layout.activity_score);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initView();
         initData();
-        initYearList();
+        //目前直接请求自动登录，
+        //  initYearList();
+        requestLoginByNoCode();
         initLisitener();
     }
 
@@ -114,13 +116,12 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
         //已保存的用户名和密码
         stuXH = baseInfoDao.query("stuXH");
         password = baseInfoDao.query("password");
-        System.out.println("用户名和密码 :" + stuXH + "--" + password);
         xueqi.add("1");
         xueqi.add("2");
         xueqi.add("3");
-        mode.add("学期");
-        mode.add("学年");
-        mode.add("在校");
+        mode.add("学期成绩");
+        mode.add("学年成绩");
+        mode.add("在校成绩");
     }
 
     /**
@@ -140,6 +141,7 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                     @Override
                     public void onError(Call call, Exception e) {
                         //加载学年失败，原因：没有登录，或者已经掉线,静默登陆
+                        Toast.makeText(mContext, "数据初始化失败", Toast.LENGTH_SHORT).show();
                         if (stuXH != null && password != null) {
                             //利用无需验证码的登录界面自动登录
                             requestLoginByNoCode();
@@ -181,7 +183,8 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
             @Override
             public void onError(Call call, Exception e) {
                 //自动登录失败
-                Toast.makeText(mContext, "登录失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "登录失败,请稍后再试", Toast.LENGTH_SHORT).show();
+                pbCjcx.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -239,13 +242,13 @@ public class SearchCjActivity extends AppCompatActivity implements AdapterView.O
                 break;
             case R.id.spinner_mode:
                 String modeString = mode.get(position).toString();
-                if (modeString.equals("学期")) {
+                if (modeString.equals("学期成绩")) {
                     selectMode = BUTTON_XQ;
                     VIEWSTATE = XQVIEWSTATE;
-                } else if (modeString.equals("学年")) {
+                } else if (modeString.equals("学年成绩")) {
                     selectMode = BUTTON_XN;
                     VIEWSTATE = JUSTXNVIEWSTATE;
-                } else if (modeString.equals("在校")) {
+                } else if (modeString.equals("在校成绩")) {
                     selectMode = BUTTON_ZX;
                     VIEWSTATE = JUSTZXVIEWSTATE;
                 }

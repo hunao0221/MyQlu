@@ -1,5 +1,6 @@
 package com.hugo.myqlu.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,10 +9,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -38,7 +43,6 @@ public class SplashAvtivity extends AppCompatActivity {
     TextView tv_version;
     private String updateUrl = "http://hunao0221.github.io/myqluupdate.json";
     private Context mContext = this;
-    private SharedPreferences sp;
     private boolean isFirstIn;
     private String mVersionName;
     private int mVersionCode;
@@ -60,6 +64,7 @@ public class SplashAvtivity extends AppCompatActivity {
             handler.sendEmptyMessageDelayed(0, 3000);
         }
     }
+
 
     private void checkForUpdate() {
         OkHttpUtils.get().url(updateUrl)
@@ -87,12 +92,37 @@ public class SplashAvtivity extends AppCompatActivity {
         if (versionInfo != null) {
             int versionCode = versionInfo.getVersionCode();
             if (versionCode > mVersionCode) {
-                System.out.println("检测到更新");
-                showUpdateDialog();
+                if (Build.VERSION.SDK_INT >= 23) {
+                    int permission = ContextCompat.checkSelfPermission(mContext, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                    if (permission != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 123);
+                        return;
+                    } else {
+                        showUpdateDialog();
+                    }
+                } else {
+                    showUpdateDialog();
+                }
             } else {
-                System.out.println("没有更新哦");
                 handler.sendEmptyMessageDelayed(0, 2000);
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 123:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission Granted
+                    showUpdateDialog();
+                } else {
+                    // Permission Denied
+                    handler.sendEmptyMessageDelayed(0, 1000);
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
@@ -106,10 +136,9 @@ public class SplashAvtivity extends AppCompatActivity {
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                System.out.println("好的，我下载");
                 dialog.dismiss();
-                //下载进度条弹窗
                 showDownLoadDialog();
+
                 downLoadUpdateFile();
             }
         });
@@ -158,13 +187,11 @@ public class SplashAvtivity extends AppCompatActivity {
 
                     @Override
                     public void onError(Call call, Exception e) {
-                        System.out.println("下载失败");
                         handler.sendEmptyMessageDelayed(2, 1000);
                     }
 
                     @Override
                     public void onResponse(File response) {
-                        System.out.println("下载成功");
                         //下载成功。进入程序安装界面
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.addCategory(Intent.CATEGORY_DEFAULT);
@@ -205,7 +232,6 @@ public class SplashAvtivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    Toast.makeText(mContext, "网络错误", Toast.LENGTH_SHORT).show();
                     break;
                 case 2:
                     Toast.makeText(mContext, "下载失败", Toast.LENGTH_SHORT).show();
@@ -220,8 +246,8 @@ public class SplashAvtivity extends AppCompatActivity {
      * 下次啊直接进入主页
      */
     private void enterHome() {
-        sp = SpUtil.getSp(mContext, "config");
-        isFirstIn = sp.getBoolean("isFirstIn", true);
+        config = SpUtil.getSp(mContext, "config");
+        isFirstIn = config.getBoolean("isFirstIn", true);
         Intent intent;
         if (isFirstIn) {
             intent = new Intent(mContext, LoginActivity.class);

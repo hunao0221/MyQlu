@@ -1,6 +1,7 @@
 package com.hugo.myqlu.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
@@ -26,8 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.getbase.floatingactionbutton.FloatingActionButton;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.clans.fab.FloatingActionMenu;
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ZhangBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
@@ -70,13 +70,13 @@ public class SchoolCardActivity extends AppCompatActivity {
     @Bind(R.id.tv_date)
     TextView tvDate;
     @Bind(R.id.fab)
-    FloatingActionButton fab;
+    com.github.clans.fab.FloatingActionButton fab;
     @Bind(R.id.fab_query)
-    FloatingActionButton fabQuery;
-    @Bind(R.id.fab_menu)
-    FloatingActionsMenu fabMenu;
+    com.github.clans.fab.FloatingActionButton fabQuery;
     @Bind(R.id.tv_total_num)
     TextView tvTotalNum;
+    @Bind(R.id.fab_menu)
+    FloatingActionMenu fabMenu;
 
     private Context mContext = this;
     private EditText etUsername;
@@ -114,13 +114,14 @@ public class SchoolCardActivity extends AppCompatActivity {
     private String queryAction;
     private String lastAction;
     private List<ZhangBean> historyLiushui;
-    private AlertDialog waitDialog;
+    private ProgressDialog waitDialog;
     private int totalPages;
     private MyAdapte adapte = null;
     private String inputEndDate;
     private String inputStartDate;
     private int nextPage;
     private String stuXH;
+    private int mPreviousVisibleItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +138,7 @@ public class SchoolCardActivity extends AppCompatActivity {
     private void initData() {
         BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
         stuXH = baseInfoDao.query("stuXH");
+
     }
 
     private void showLoginDialog() {
@@ -186,6 +188,9 @@ public class SchoolCardActivity extends AppCompatActivity {
 
     //登陆前检查
     private void attemptLogin() {
+        if (tv_error.getVisibility() == View.VISIBLE) {
+            tv_error.setVisibility(View.GONE);
+        }
         View focusView = null;
         userId = etUsername.getText().toString().trim();
         password = etPassword.getText().toString().trim();
@@ -236,6 +241,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                             tv_error.setVisibility(View.VISIBLE);
                         }
                         tv_error.setText("登陆失败");
+                        System.out.println(e.getMessage());
                     }
 
                     @Override
@@ -333,12 +339,11 @@ public class SchoolCardActivity extends AppCompatActivity {
                 zhangList = parseLiushui.parse();
                 if (zhangList.size() == 0) {
                     tvNullData.setVisibility(View.VISIBLE);
-                } else {
-                    String total = parseLiushui.getTotal().trim();
-                    tvTotal.setText("您今日一共消费了 : ");
-                    tvTotalNum.setText(total + "元");
-                    initListview();
                 }
+                String total = parseLiushui.getTotal().trim();
+                tvTotal.setText("您今日一共消费了 : ");
+                tvTotalNum.setText(total + "元");
+                initListview();
             }
         });
     }
@@ -412,19 +417,18 @@ public class SchoolCardActivity extends AppCompatActivity {
 
         @Override
         public void onScrollStateChanged(AbsListView view, int scrollState) {
-            switch (scrollState) {
-                case SCROLL_STATE_FLING:
-                    fabMenu.setVisibility(View.INVISIBLE);
-                    break;
-                case SCROLL_STATE_IDLE:
-                    fabMenu.setVisibility(View.VISIBLE);
-                    break;
-            }
+
         }
 
         @Override
         public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             View lastVisibleItemView = listview.getChildAt(listview.getChildCount() - 1);
+            if (firstVisibleItem > mPreviousVisibleItem) {
+                fabMenu.hideMenu(true);
+            } else if (firstVisibleItem < mPreviousVisibleItem) {
+                fabMenu.showMenu(true);
+            }
+            mPreviousVisibleItem = firstVisibleItem;
             if ((firstVisibleItem + visibleItemCount) == totalItemCount) {
                 if (lastVisibleItemView != null && lastVisibleItemView.getBottom() == listview.getHeight()) {
                     nextPage++;
@@ -434,6 +438,37 @@ public class SchoolCardActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 请求下一页的数据
+     */
+    private synchronized void requestNextPage() {
+        if (nextPage > totalPages) {
+            return;
+        }
+        OkHttpUtils.post().url(nextPageUrl)
+                .addHeader("Host", "210.44.159.5")
+                .addHeader("Referer", "nextPageUrl")
+                .addParams("inputStartDate", inputStartDate)
+                .addParams("inputEndDate", inputEndDate)
+                .addParams("pageNum", nextPage + "")
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e) {
+                        Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(String response) {
+                        List<ZhangBean> nextInfo = ParseHistoryInfo.get(response);
+                        for (ZhangBean next : nextInfo) {
+                            historyLiushui.add(historyLiushui.size(), next);
+                        }
+                        adapte.notifyDataSetChanged();
+                    }
+                });
+    }
+
     private void initListener() {
         MyClickListener listener = new MyClickListener();
         tv_change.setOnClickListener(listener);
@@ -441,7 +476,6 @@ public class SchoolCardActivity extends AppCompatActivity {
         tv_cancle.setOnClickListener(listener);
         tvOk.setOnClickListener(listener);
         fab.setOnClickListener(listener);
-        fabMenu.setOnClickListener(listener);
         tvDate.setOnClickListener(listener);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         //监听软键盘回车时间
@@ -472,14 +506,14 @@ public class SchoolCardActivity extends AppCompatActivity {
                     initCodeImg();
                     break;
                 case R.id.tv_ok:
-                    System.out.println("你点击了登录");
                     attemptLogin();
                     break;
                 case R.id.tv_cancle:
                     exit();
                     break;
                 case R.id.fab:
-                    clearFocus();
+                    fabMenu.close(true);
+
                     if (baseInfoMap == null) {
                         if (baseInfoMap == null) {
                             Snackbar.make(rootView, "您还没有登录", Snackbar.LENGTH_LONG).setAction("登录", new View.OnClickListener() {
@@ -494,8 +528,8 @@ public class SchoolCardActivity extends AppCompatActivity {
                     break;
                 case R.id.fab_query:
                     //显示历史查询弹窗
-                    clearFocus();
-                    if (dayList.size() == 0) {
+                    fabMenu.close(true);
+                    if (dayList == null) {
                         Toast.makeText(mContext, "初始化数据,请稍后", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -508,6 +542,7 @@ public class SchoolCardActivity extends AppCompatActivity {
         }
 
     }
+
 
     /**
      * 历史查询：
@@ -623,37 +658,6 @@ public class SchoolCardActivity extends AppCompatActivity {
     }
 
     /**
-     * 请求下一页的数据
-     */
-    private synchronized void requestNextPage() {
-        if (nextPage > totalPages) {
-            return;
-        }
-        OkHttpUtils.post().url(nextPageUrl)
-                .addHeader("Host", "210.44.159.5")
-                .addHeader("Referer", "nextPageUrl")
-                .addParams("inputStartDate", inputStartDate)
-                .addParams("inputEndDate", inputEndDate)
-                .addParams("pageNum", nextPage + "")
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e) {
-                        Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onResponse(String response) {
-                        List<ZhangBean> nextInfo = ParseHistoryInfo.get(response);
-                        for (ZhangBean next : nextInfo) {
-                            historyLiushui.add(historyLiushui.size(), next);
-                        }
-                        adapte.notifyDataSetChanged();
-                    }
-                });
-    }
-
-    /**
      * 获得等待页面的action
      */
     private void queryHistoryMustInfo() {
@@ -692,6 +696,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
+
                         Toast.makeText(mContext, "查询失败", Toast.LENGTH_SHORT).show();
                     }
 
@@ -705,6 +710,9 @@ public class SchoolCardActivity extends AppCompatActivity {
                         if (adapte != null) {
                             adapte = null;
                         }
+                        if (historyLiushui.size() > 0) {
+                            tvNullData.setVisibility(View.INVISIBLE);
+                        }
                         adapte = new MyAdapte(historyLiushui);
                         listview.setAdapter(adapte);
                         listview.setOnScrollListener(new MyOnScrollListener());
@@ -716,10 +724,9 @@ public class SchoolCardActivity extends AppCompatActivity {
      * 查询等待dialog
      */
     private void showWaitDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        ProgressBar pb_wait = new ProgressBar(mContext);
-        builder.setView(pb_wait);
-        waitDialog = builder.create();
+        waitDialog = new ProgressDialog(mContext);
+        waitDialog.setTitle("正在查询");
+        waitDialog.setMessage("Loading...");
         waitDialog.show();
     }
 
@@ -750,11 +757,6 @@ public class SchoolCardActivity extends AppCompatActivity {
 
     }
 
-    public void clearFocus() {
-        fab.clearFocus();
-        fabMenu.clearFocus();
-        fabMenu.collapse();
-    }
 
     /**
      * 饭卡挂失

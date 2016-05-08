@@ -1,13 +1,13 @@
 package com.hugo.myqlu.activity;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -90,13 +90,13 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     private Context mContext = this;
     private String stuXH;
     private String stuName;
-    private AlertDialog dialog;
     //所有课程
     private List<CourseBean> allCourseList;
     private SharedPreferences sp;
     //中文姓名的编码
     private String stuNameEncoding;
     private List<ExamBean> ksInfoList;
+    private ProgressDialog waitDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,12 +240,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
     }
 
     private void showSaveDataDialog(String response) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-        View view = View.inflate(mContext, R.layout.dialog_save_data, null);
-        builder.setView(view);
-        dialog = builder.create();
-        dialog.show();
-        dialog.setCanceledOnTouchOutside(false);
+
+        waitDialog = new ProgressDialog(mContext);
+        waitDialog.setTitle("请稍后");
+        waitDialog.setMessage("Loading...");
+        waitDialog.show();
         initURL(response);
         initCourseData();
     }
@@ -299,7 +298,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public void onError(Call call, Exception e) {
-                        dialog.dismiss();
+                        waitDialog.dismiss();
                         Snackbar.make(rootView, "未知错误，重启APP", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -318,7 +317,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                         allCourseList = ParseKbFromHtml.getKB(response);
                         if (allCourseList == null) {
-                            dialog.dismiss();
+                            waitDialog.dismiss();
                             Toast.makeText(mContext, "同步失败", Toast.LENGTH_SHORT).show();
                         } else {
                             initKSData();
@@ -396,7 +395,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             String examLocation = exam.getExamLocation();
             boolean addSuccess = kaoshiDao.add(examName, examTime, examLocation);
             if (!addSuccess) {
-                dialog.dismiss();
+                waitDialog.dismiss();
                 saveSucess = false;
                 Toast.makeText(mContext, "保存考试信息失败", Toast.LENGTH_SHORT).show();
                 break;
@@ -409,7 +408,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             sp.edit().putBoolean("isFirstIn", false).commit();
             allCourseList = null;
             startActivity(new Intent(mContext, MainActivity.class));
-            dialog.dismiss();
+            waitDialog.dismiss();
             finish();
         }
     }

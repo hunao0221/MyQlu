@@ -33,6 +33,24 @@ public class KaoshiDao {
         return kaosiinfo != -1;
     }
 
+    public boolean query(String name) {
+        boolean flag = false;
+        KsHelper helper = new KsHelper(mContext, 1);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("kaoshiinfo", null, "examname=?", new String[]{name}, null, null, null, null);
+        if (cursor.moveToNext()) {
+            String examname = cursor.getString(1);
+            String examtime = cursor.getString(2);
+            String examlocation = cursor.getString(3);
+            System.out.println(examname + "-" + examtime + "-" + examlocation);
+            flag = true;
+        }
+        cursor.close();
+        db.close();
+        return flag;
+    }
+
+
     public List<ExamBean> queryAll() {
         KsHelper helper = new KsHelper(mContext, 1);
         SQLiteDatabase db = helper.getReadableDatabase();
@@ -51,6 +69,16 @@ public class KaoshiDao {
         cursor.close();
         db.close();
         return examList;
+    }
+
+    public boolean update(String name, String time, String location) {
+        KsHelper helper = new KsHelper(mContext, 1);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("examtime", time);
+        values.put("examlocation", location);
+        int update = db.update("kaoshiinfo", values, "examname=?", new String[]{name});
+        return update != 0;
     }
 
     public void deleteAll() {

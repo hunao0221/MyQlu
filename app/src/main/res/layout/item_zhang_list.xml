@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_centerHorizontal="true"
+    android:descendantFocusability="blocksDescendants"
     android:gravity="center"
     android:padding="5dp">
 
     <LinearLayout
-        android:layout_gravity="center"
-        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center">
 
         <TextView
             android:id="@+id/tv_time"
@@ -40,7 +41,7 @@
             android:id="@+id/balance"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:gravity="center"
             android:text="现有余额" />

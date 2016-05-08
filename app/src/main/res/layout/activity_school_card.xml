@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
     android:layout_width="match_parent"
@@ -20,7 +21,6 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-
             <TextView
                 android:id="@+id/tv_date"
                 style="@android:style/TextAppearance.DeviceDefault"
@@ -30,42 +30,39 @@
                 android:layout_gravity="right"
                 android:layout_marginRight="20dp"
                 android:textSize="22sp" />
-
-
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-
     <include layout="@layout/content_school_card" />
 
-    <com.getbase.floatingactionbutton.FloatingActionsMenu
+    <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:fab_labelStyle="@style/menu_labels_style"
-        app:fab_labelsPosition="left">
+        android:focusable="false"
+        fab:menu_colorNormal="#03A9F4"
+        fab:menu_labels_style="@style/menu_labels_style">
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/colorPrimary"
-            app:fab_icon="@android:drawable/ic_lock_idle_lock"
-            app:fab_size="mini"
-            app:fab_title="挂失" />
+            android:src="@android:drawable/ic_lock_idle_lock"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_label="挂失"
+            fab:fab_size="normal" />
 
-        <com.getbase.floatingactionbutton.FloatingActionButton
+        <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_query"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_colorNormal="@color/colorPrimary"
-            app:fab_icon="@android:drawable/ic_menu_search"
-            app:fab_size="mini"
-            app:fab_title="历史查询" />
-    </com.getbase.floatingactionbutton.FloatingActionsMenu>
-
+            android:src="@android:drawable/ic_menu_search"
+            fab:fab_colorNormal="@color/colorPrimary"
+            fab:fab_label="历史"
+            fab:fab_size="mini" />
+    </com.github.clans.fab.FloatingActionMenu>
 
 </android.support.design.widget.CoordinatorLayout>
