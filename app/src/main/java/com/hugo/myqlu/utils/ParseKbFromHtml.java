@@ -20,7 +20,7 @@ public class ParseKbFromHtml {
 
     private static List<CourseBean> courseList = new ArrayList<>();
 
-    public static List<CourseBean> getKB(String response) {
+    public static List<CourseBean> getCourses(String response) {
         response = response.replace("<br>", "hu");
         Document document = Jsoup.parse(response);
         Element table1 = document.getElementById("Table1");
