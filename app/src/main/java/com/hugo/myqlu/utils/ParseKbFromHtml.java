@@ -69,6 +69,7 @@ public class ParseKbFromHtml {
                         //基于java的web开发(JSP/Sevlet) 周三第5,6节{第1-16周} 尹红丽 1号公教楼602
                         String[] strings = text.split("hu");
                         String name = "";
+
                         if (strings.length > 4) {
                             name = strings[0] + "-" + strings[1].substring(strings[1].indexOf("|") + 1, strings[1].indexOf("}"));
                             String name2 = strings[5] + "-" + strings[6].substring(strings[6].indexOf("|") + 1, strings[6].indexOf("}"));
@@ -84,8 +85,23 @@ public class ParseKbFromHtml {
                         course.setCourseName(name);
                         course.setCourseTime(String.valueOf(j));
                         course.setCourstTimeDetail(timeDetail);
-                        course.setCourseTeacher(strings[2]);
-                        course.setCourseLocation(strings[3]);
+                        /**
+                         * 有的课程不规范，缺少信息，房子程序崩溃，
+                         */
+                        String teacher = "";
+                        try {
+                            teacher = strings[2];
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            teacher = "暂无";
+                        }
+                        String location = "";
+                        try {
+                            location = strings[3];
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            location = "暂无";
+                        }
+                        course.setCourseTeacher(teacher);
+                        course.setCourseLocation(location);
                         courseList.add(course);
                     }
                 }
