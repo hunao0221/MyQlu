@@ -62,6 +62,7 @@
             android:id="@+id/pb_cjcx"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:scrollbarSize="@dimen/fab_size_mini"
             android:layout_centerHorizontal="true" />
 
         <ListView

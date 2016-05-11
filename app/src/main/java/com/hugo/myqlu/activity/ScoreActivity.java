@@ -295,6 +295,9 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
             title = ddlXN + "学年学习成绩";
         }
 
+        if (!pbCjcx.isShown()) {
+            pbCjcx.setVisibility(View.VISIBLE);
+        }
         final PostFormBuilder post = OkHttpUtils.post();
 
         post.url(cjcxUrl)
@@ -311,7 +314,6 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onError(Call call, Exception e) {
                 Toast.makeText(mContext, "查询失败", Toast.LENGTH_SHORT).show();
-                System.out.println(e.getMessage().toString());
             }
 
             @Override
@@ -331,6 +333,9 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
     }
 
     private void initUI() {
+        if (pbCjcx.isShown()) {
+            pbCjcx.setVisibility(View.INVISIBLE);
+        }
         MyAdapter adapter = new MyAdapter();
         tvTitle.setText(title);
         tvTitle.setTextSize(18);
@@ -371,22 +376,24 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
             if (convertView == null) {
                 view = View.inflate(mContext, R.layout.item_cj, null);
                 holder = new ViewHolder();
-                holder.tvKeCheng = ButterKnife.findById(view, R.id.tv_kecheng);
-                holder.tvCj = ButterKnife.findById(view, R.id.tv_chengji);
+                holder.tvCourse = ButterKnife.findById(view, R.id.tv_kecheng);
+                holder.tvScore = ButterKnife.findById(view, R.id.tv_chengji);
                 view.setTag(holder);
             } else {
                 view = convertView;
                 holder = (ViewHolder) view.getTag();
             }
-            holder.tvKeCheng.setText(cjList.get(position).getCourseName());
-            holder.tvCj.setText(cjList.get(position).getCourseCj());
+            holder.tvCourse.setText(cjList.get(position).getCourseName());
+            holder.tvScore.setText(cjList.get(position).getCourseCj());
             return view;
         }
     }
 
     public class ViewHolder {
-        TextView tvKeCheng;
-        TextView tvCj;
+        //课程
+        TextView tvCourse;
+        //成绩
+        TextView tvScore;
     }
 
 

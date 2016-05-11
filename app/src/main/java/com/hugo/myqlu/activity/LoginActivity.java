@@ -293,6 +293,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public String parseNetworkResponse(Response response) throws IOException {
+                        System.out.println("课表 ：" + response.code());
+
                         return super.parseNetworkResponse(response);
                     }
 

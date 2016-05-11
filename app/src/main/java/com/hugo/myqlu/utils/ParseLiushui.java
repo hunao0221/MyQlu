@@ -32,7 +32,6 @@ public class ParseLiushui {
             ZhangBean zhangBean = new ZhangBean();
             //交易时间
             String text = tr.child(0).text();
-            text = text.substring(text.indexOf(" ") + 1, text.length()).trim();
             zhangBean.setTime(text);
             //交易终端
             zhangBean.setTerminal(tr.child(4).text().trim());

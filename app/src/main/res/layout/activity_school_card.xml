@@ -21,15 +21,27 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
-            <TextView
-                android:id="@+id/tv_date"
-                style="@android:style/TextAppearance.DeviceDefault"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <RelativeLayout
+                android:clickable="true"
+                android:id="@+id/rl_date"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
                 android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="20dp"
-                android:textSize="22sp" />
+                android:background="@mipmap/rili_shense">
+
+                <TextView
+                    android:id="@+id/tv_date"
+                    style="@android:style/TextAppearance.DeviceDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="19"
+                    android:textSize="14sp" />
+            </RelativeLayout>
+
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>

@@ -21,7 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hugo.myqlu.R;
@@ -48,7 +47,6 @@ public class MainActivity extends AppCompatActivity
     TextView tvNullCourse;
 
     private Toolbar toolbar;
-    private ImageView iv_user_heead;
     private Context mContext = this;
     private DrawerLayout drawer;
     private String stuXH;
@@ -85,7 +83,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         View view = navigationView.getHeaderView(0);
-        iv_user_heead = (ImageView) view.findViewById(R.id.iv_user_head);
         header_xh = (TextView) view.findViewById(R.id.header_xh);
         header_name = (TextView) view.findViewById(R.id.header_name);
     }
@@ -322,7 +319,7 @@ public class MainActivity extends AppCompatActivity
 
         return super.onOptionsItemSelected(item);
     }
-    
+
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

@@ -10,27 +10,33 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ZhangBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
+import com.hugo.myqlu.utils.DividerItemDecoration;
 import com.hugo.myqlu.utils.HistoryDayUtil;
 import com.hugo.myqlu.utils.ParseCardInfo;
 import com.hugo.myqlu.utils.ParseHistoryInfo;
@@ -39,7 +45,10 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.BitmapCallback;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -59,8 +68,6 @@ public class SchoolCardActivity extends AppCompatActivity {
     TextView tvUserId;
     @Bind(R.id.tv_yuer)
     TextView tvYuer;
-    @Bind(R.id.listview)
-    ListView listview;
     @Bind(R.id.tv_null_data)
     TextView tvNullData;
     @Bind(R.id.root_view)
@@ -70,13 +77,17 @@ public class SchoolCardActivity extends AppCompatActivity {
     @Bind(R.id.tv_date)
     TextView tvDate;
     @Bind(R.id.fab)
-    com.github.clans.fab.FloatingActionButton fab;
+    FloatingActionButton fab;
     @Bind(R.id.fab_query)
-    com.github.clans.fab.FloatingActionButton fabQuery;
+    FloatingActionButton fabQuery;
     @Bind(R.id.tv_total_num)
     TextView tvTotalNum;
     @Bind(R.id.fab_menu)
     FloatingActionMenu fabMenu;
+    @Bind(R.id.zhang_list)
+    RecyclerView recylerView;
+    @Bind(R.id.rl_date)
+    RelativeLayout rlDate;
 
     private Context mContext = this;
     private EditText etUsername;
@@ -84,15 +95,25 @@ public class SchoolCardActivity extends AppCompatActivity {
     private EditText etCode;
     private ImageView ivCodes;
 
+    //验证码
     private String codeUrl = "http://210.44.159.5/getCheckpic.action?rand=?,Math.random()";
+    //登陆
     private String loginUrl = "http://210.44.159.5/loginstudent.action";
+    //
     private String mainUrl = "http://210.44.159.5/accountcardUser.action";
+    //今日流水
     private String liushuiUrl = "http://210.44.159.5/accounttodatTrjnObject.action";
+    //挂失
     private String doLostUrl = "http://210.44.159.5/accountDoLoss.action";
+    //消费历史查询
     private String historyUrl = "http://210.44.159.5/accounthisTrjn.action";
+
     private String host = "http://210.44.159.5";
-    private String lasturl = "http://210.44.159.5/accounthisTrjn.action";
+    //等待页面
+    private String waitUrl = "http://210.44.159.5/accounthisTrjn.action";
+    //流水下一页
     private String nextPageUrl = "http://210.44.159.5/accountconsubBrows.action";
+
     private TextView tv_change;
     private TextView tvOk;
     private String userId;
@@ -102,7 +123,7 @@ public class SchoolCardActivity extends AppCompatActivity {
     private ProgressBar pbLogin;
     private TextView tv_error;
     private Map<String, String> baseInfoMap = null;
-    private List<ZhangBean> zhangList;
+    private List<ZhangBean> todayZhangList = null;
     private String account;
     private TextView tv_cancle;
     private EditText lost_account;
@@ -116,12 +137,13 @@ public class SchoolCardActivity extends AppCompatActivity {
     private List<ZhangBean> historyLiushui;
     private ProgressDialog waitDialog;
     private int totalPages;
-    private MyAdapte adapte = null;
     private String inputEndDate;
     private String inputStartDate;
     private int nextPage;
     private String stuXH;
-    private int mPreviousVisibleItem;
+    private MyRecylerAdapter recylerAdapter;
+    private LinearLayoutManager layoutManager;
+    private String total;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,15 +152,20 @@ public class SchoolCardActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         toolbar.setTitle("一卡通");
         setSupportActionBar(toolbar);
+        initVIew();
         initData();
         showLoginDialog();
         initListener();
     }
 
+    private void initVIew() {
+        layoutManager = new LinearLayoutManager(mContext);
+        recylerView.setLayoutManager(layoutManager);
+    }
+
     private void initData() {
         BaseInfoDao baseInfoDao = new BaseInfoDao(mContext);
         stuXH = baseInfoDao.query("stuXH");
-
     }
 
     private void showLoginDialog() {
@@ -336,105 +363,54 @@ public class SchoolCardActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 ParseLiushui parseLiushui = new ParseLiushui(response);
-                zhangList = parseLiushui.parse();
-                if (zhangList.size() == 0) {
+                todayZhangList = parseLiushui.parse();
+                if (todayZhangList.size() == 0) {
                     tvNullData.setVisibility(View.VISIBLE);
                 }
-                String total = parseLiushui.getTotal().trim();
+                total = parseLiushui.getTotal().trim();
                 tvTotal.setText("您今日一共消费了 : ");
                 tvTotalNum.setText(total + "元");
-                initListview();
+                //initListview();
+                initRecyler();
             }
         });
     }
 
-    /**
-     * 账目list
-     */
-    private void initListview() {
-        if (adapte != null) {
-            adapte = null;
-        }
-        adapte = new MyAdapte(zhangList);
-        listview.setAdapter(adapte);
+    private void initRecyler() {
+        recylerAdapter = new MyRecylerAdapter(todayZhangList, true);
+        recylerView.setItemAnimator(new DefaultItemAnimator());
+        recylerView.addOnScrollListener(new MyOnScrollListener());
+        recylerView.addItemDecoration(new DividerItemDecoration(mContext, LinearLayoutManager.VERTICAL));
+        recylerView.setAdapter(recylerAdapter);
     }
 
-    class MyAdapte extends BaseAdapter {
-        private List<ZhangBean> zhangList;
-
-        public MyAdapte(List<ZhangBean> zhangList) {
-            this.zhangList = zhangList;
-        }
+    class MyOnScrollListener extends RecyclerView.OnScrollListener {
+        private static final int HIDE_THRESHOLD = 20;
+        private int scrolledDistance = 0;
+        private boolean controlsVisible = true;
 
         @Override
-        public int getCount() {
-            return zhangList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return zhangList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
-            View view;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                view = View.inflate(mContext, R.layout.item_zhang_list, null);
-                holder.time = (TextView) view.findViewById(R.id.tv_time);
-                holder.terminal = (TextView) view.findViewById(R.id.terminal);
-                holder.balance = (TextView) view.findViewById(R.id.balance);
-                holder.turnover = (TextView) view.findViewById(R.id.turnover);
-                view.setTag(holder);
-            } else {
-                view = convertView;
-                holder = (ViewHolder) view.getTag();
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+            if (lastVisibleItemPosition == layoutManager.getItemCount() - 1) {
+                nextPage++;
+                requestNextPage();
             }
-            ZhangBean zhangInfo = zhangList.get(position);
-            holder.time.setText(zhangInfo.getTime());
-            holder.terminal.setText(zhangInfo.getTerminal());
-            holder.balance.setText(zhangInfo.getBalance());
-            holder.turnover.setText(zhangInfo.getTurnover());
-            return view;
-        }
-    }
-
-    class ViewHolder {
-        TextView time;
-        TextView terminal;
-        TextView balance;
-        TextView turnover;
-    }
-
-    class MyOnScrollListener implements AbsListView.OnScrollListener {
-
-        @Override
-        public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-        }
-
-        @Override
-        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-            View lastVisibleItemView = listview.getChildAt(listview.getChildCount() - 1);
-            if (firstVisibleItem > mPreviousVisibleItem) {
+            if (scrolledDistance > HIDE_THRESHOLD && controlsVisible) {
+                //隐藏
                 fabMenu.hideMenu(true);
-            } else if (firstVisibleItem < mPreviousVisibleItem) {
+                controlsVisible = false;
+                scrolledDistance = 0;
+            } else if (scrolledDistance < -HIDE_THRESHOLD && !controlsVisible) {
+                // 显示
                 fabMenu.showMenu(true);
+                controlsVisible = true;
+                scrolledDistance = 0;
             }
-            mPreviousVisibleItem = firstVisibleItem;
-            if ((firstVisibleItem + visibleItemCount) == totalItemCount) {
-                if (lastVisibleItemView != null && lastVisibleItemView.getBottom() == listview.getHeight()) {
-                    nextPage++;
-                    requestNextPage();
-                }
+            if ((controlsVisible && dy > 0) || (!controlsVisible && dy < 0)) {
+                scrolledDistance += dy;
             }
+            super.onScrolled(recyclerView, dx, dy);
         }
     }
 
@@ -464,7 +440,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                         for (ZhangBean next : nextInfo) {
                             historyLiushui.add(historyLiushui.size(), next);
                         }
-                        adapte.notifyDataSetChanged();
+                        recylerAdapter.notifyDataSetChanged();
                     }
                 });
     }
@@ -474,9 +450,9 @@ public class SchoolCardActivity extends AppCompatActivity {
         tv_change.setOnClickListener(listener);
         ivCodes.setOnClickListener(listener);
         tv_cancle.setOnClickListener(listener);
+        rlDate.setOnClickListener(listener);
         tvOk.setOnClickListener(listener);
         fab.setOnClickListener(listener);
-        tvDate.setOnClickListener(listener);
         final InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         //监听软键盘回车时间
         etCode.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -535,8 +511,15 @@ public class SchoolCardActivity extends AppCompatActivity {
                     }
                     showHistoryDialog();
                     break;
-                case R.id.tv_date:
-                    getTodayData();
+                case R.id.rl_date:
+                    if (todayZhangList != null) {
+                        recylerAdapter = new MyRecylerAdapter(todayZhangList, true);
+                        recylerView.setAdapter(recylerAdapter);
+                        tvTotal.setText("您今日一共消费了 : ");
+                        tvTotalNum.setText(total);
+                    } else {
+                        getTodayData();
+                    }
                     break;
             }
         }
@@ -646,7 +629,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
-                        System.out.println("获取失败");
+                        Toast.makeText(mContext, "关键信息获取失败", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -688,9 +671,9 @@ public class SchoolCardActivity extends AppCompatActivity {
      * 利用等待页面获取的action查询历史消费信息
      */
     private void queryHistoryConsumption() {
-        OkHttpUtils.post().url(lasturl + lastAction)
+        OkHttpUtils.post().url(waitUrl + lastAction)
                 .addHeader("Host", "210.44.159.5")
-                .addHeader("Referer", "lasturl+lastAction")
+                .addHeader("Referer", "waitUrl+lastAction")
                 .addParams("__continue", lastAction.substring(lastAction.indexOf("=") + 1, lastAction.length()).trim())
                 .build()
                 .execute(new StringCallback() {
@@ -707,15 +690,13 @@ public class SchoolCardActivity extends AppCompatActivity {
                         totalPages = ParseHistoryInfo.getTotalPages(response);
                         waitDialog.dismiss();
                         tvTotalNum.setText(historyTotal + "元");
-                        if (adapte != null) {
-                            adapte = null;
-                        }
+
                         if (historyLiushui.size() > 0) {
                             tvNullData.setVisibility(View.INVISIBLE);
                         }
-                        adapte = new MyAdapte(historyLiushui);
-                        listview.setAdapter(adapte);
-                        listview.setOnScrollListener(new MyOnScrollListener());
+
+                        recylerAdapter = new MyRecylerAdapter(historyLiushui, false);
+                        recylerView.setAdapter(recylerAdapter);
                     }
                 });
     }
@@ -755,6 +736,161 @@ public class SchoolCardActivity extends AppCompatActivity {
             return view;
         }
 
+    }
+
+
+    class MyRecylerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        private final static int NORMAL_TYPE = 0;
+        private final static int TIME_TYPE = 1;
+
+        private List<ZhangBean> zhangList;
+        private boolean isToday;
+
+        public MyRecylerAdapter(List<ZhangBean> zhangList, boolean isToday) {
+            this.zhangList = zhangList;
+            this.isToday = isToday;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (isToday) {
+                return NORMAL_TYPE;
+            }
+            if (position == 0) {
+                return TIME_TYPE;
+            }
+            int lastPosition = position - 1;
+            ZhangBean currentZhang = zhangList.get(position);
+            ZhangBean lastZhang = zhangList.get(lastPosition);
+            String currentTime = currentZhang.getTime().split(" ")[0];
+            String lastTime = lastZhang.getTime().split(" ")[0];
+            if (currentTime.equals(lastTime)) {
+                return NORMAL_TYPE;
+            } else {
+                return TIME_TYPE;
+            }
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return super.getItemId(position);
+        }
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+            if (viewType == NORMAL_TYPE)
+                return new NormalHolder(LayoutInflater.from(mContext).inflate(R.layout.item_zhang_normal, parent, false));
+            else
+                return new TimeHolder(LayoutInflater.from(mContext).inflate(R.layout.item_zhang_time, parent, false));
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            ZhangBean zhangBean = this.zhangList.get(position);
+            String[] times = zhangBean.getTime().split(" ");
+            String terminal = zhangBean.getTerminal();
+            if (holder instanceof TimeHolder) {
+                ((TimeHolder) holder).tv_zhang_time.setText(times[0]);
+                ((TimeHolder) holder).tv_system.setText(terminal);
+                ((TimeHolder) holder).tv_money.setText(zhangBean.getTurnover());
+                ((TimeHolder) holder).tv_item_time.setText(times[1]);
+                ((TimeHolder) holder).iv_type.setImageResource(getTypeImage(terminal, times[1]));
+            } else {
+                ((NormalHolder) holder).tv_money.setText(zhangBean.getTurnover());
+                ((NormalHolder) holder).tv_system.setText(terminal);
+                ((NormalHolder) holder).tv_item_time.setText(times[1]);
+                ((NormalHolder) holder).iv_type.setImageResource(getTypeImage(terminal, times[1]));
+            }
+        }
+
+        /**
+         * @param terminal 系统名称
+         * @param time     消费时间
+         * @return 返回图片id
+         */
+        public int getTypeImage(String terminal, String time) {
+            int drawableId = 0;
+            if (terminal.equals("长清水控浴室")) {
+                drawableId = R.mipmap.xizao;
+            } else if (terminal.equals("三餐商务")) {
+                drawableId = compareTime(time);
+            } else if (terminal.equals("一餐商务")) {
+                drawableId = compareTime(time);
+            } else if (terminal.equals("医疗子系统")) {
+                drawableId = R.mipmap.yaopinfei;
+            } else if (terminal.equals("生活区商务子系统")) {
+                drawableId = compareTime(time);
+            } else if (terminal.equals("直饮水")) {
+                drawableId = R.mipmap.shuifei;
+            } else {
+                drawableId = R.mipmap.icon_zhichu_type_yanjiuyinliao;
+            }
+            return drawableId;
+        }
+
+        /**
+         * 时间比较，区别早餐，中餐，晚餐；
+         *
+         * @param time 消费时间
+         * @return 返回图片id
+         */
+        public int compareTime(String time) {
+            SimpleDateFormat sdf = new SimpleDateFormat("hh/mm/ss");
+            time = time.replace(":", "/");
+            try {
+                //早餐时间
+                Date breakfastStart = sdf.parse("06/00/00");
+                Date breakfastEnd = sdf.parse("09/00/00");
+                //午餐时间
+                Date lunchStart = sdf.parse("11/00/00");
+                Date lunchEnd = sdf.parse("13/00/00");
+                //晚餐时间
+                Date dinerStart = sdf.parse("16/00/00");
+                Date dinerEnd = sdf.parse("20/00/00");
+                Date thisTime = sdf.parse(time);
+                if (thisTime.after(breakfastStart) && thisTime.before(breakfastEnd)) {
+                    return R.mipmap.zaocan;
+                } else if (thisTime.after(lunchStart) && thisTime.before(lunchEnd)) {
+                    return R.mipmap.zhongfan;
+                } else if (thisTime.after(dinerStart) && thisTime.before(dinerEnd)) {
+                    return R.mipmap.wanfan;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            return R.mipmap.lingshi;
+        }
+
+        @Override
+        public int getItemCount() {
+            return this.zhangList.size();
+        }
+
+        class NormalHolder extends RecyclerView.ViewHolder {
+            TextView tv_system;
+            TextView tv_money;
+            ImageView iv_type;
+            TextView tv_item_time;
+
+            public NormalHolder(View itemView) {
+                super(itemView);
+                tv_system = ButterKnife.findById(itemView, R.id.zhang_system);
+                tv_money = ButterKnife.findById(itemView, R.id.zhang_money);
+                iv_type = ButterKnife.findById(itemView, R.id.iv_type);
+                tv_item_time = ButterKnife.findById(itemView, R.id.tv_item_time);
+            }
+        }
+
+        class TimeHolder extends NormalHolder {
+
+            TextView tv_zhang_time;
+
+            public TimeHolder(View itemView) {
+                super(itemView);
+                tv_zhang_time = ButterKnife.findById(itemView, R.id.tv_zhang_time);
+            }
+        }
     }
 
 
@@ -803,7 +939,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e) {
-                        System.out.println(e.toString());
+                        Toast.makeText(mContext, "挂失失败", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
