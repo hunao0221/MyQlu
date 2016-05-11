@@ -16,7 +16,7 @@ import java.util.List;
  * @auther Hugo
  * Created on 2016/4/23 8:56.
  */
-public class ParseKbFromHtml {
+public class ParseCourses {
 
     private static List<CourseBean> courseList = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class ParseKbFromHtml {
                         course.setCourseTime(String.valueOf(j));
                         course.setCourstTimeDetail(timeDetail);
                         /**
-                         * 有的课程不规范，缺少信息，房子程序崩溃，
+                         * 有的课程不规范，缺少信息，导致解析错误，程序崩溃
                          */
                         String teacher = "";
                         try {

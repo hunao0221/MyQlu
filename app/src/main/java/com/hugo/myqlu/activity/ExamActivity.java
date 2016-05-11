@@ -18,7 +18,7 @@ import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ExamBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.KaoshiDao;
-import com.hugo.myqlu.utils.ParseKSInfoFromHtml;
+import com.hugo.myqlu.utils.ParseExam;
 import com.hugo.myqlu.utils.TextEncoderUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
@@ -204,7 +204,7 @@ public class ExamActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 //解析html，得到考试信息，保存到数据库
-                refreshList = ParseKSInfoFromHtml.parse(response);
+                refreshList = ParseExam.parse(response);
                 for (ExamBean examBean : refreshList) {
                     System.out.println(examBean.getExamName());
                     if (kaoshiDao.query(examBean.getExamName())) {

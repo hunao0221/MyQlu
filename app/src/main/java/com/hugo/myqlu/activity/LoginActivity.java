@@ -28,8 +28,8 @@ import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.CourseDao;
 import com.hugo.myqlu.dao.KaoshiDao;
 import com.hugo.myqlu.utils.HtmlUtils;
-import com.hugo.myqlu.utils.ParseKSInfoFromHtml;
-import com.hugo.myqlu.utils.ParseKbFromHtml;
+import com.hugo.myqlu.utils.ParseExam;
+import com.hugo.myqlu.utils.ParseCourses;
 import com.hugo.myqlu.utils.SpUtil;
 import com.hugo.myqlu.utils.TextEncoderUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -315,7 +315,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void onResponse(String response) {
 
-                        allCourseList = ParseKbFromHtml.getKB(response);
+                        allCourseList = ParseCourses.getKB(response);
                         if (allCourseList == null) {
                             waitDialog.dismiss();
                             Toast.makeText(mContext, "同步失败", Toast.LENGTH_SHORT).show();
@@ -344,7 +344,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             @Override
             public void onResponse(String response) {
                 //解析html，得到考试信息，保存到数据库
-                ksInfoList = ParseKSInfoFromHtml.parse(response);
+                ksInfoList = ParseExam.parse(response);
                 saveDataToDB();
             }
         });
