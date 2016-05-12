@@ -16,14 +16,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.hugo.myqlu.R;
+import com.hugo.myqlu.adapter.CourseAdapter;
 import com.hugo.myqlu.bean.CourseBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.CourseDao;
@@ -55,9 +54,9 @@ public class MainActivity extends AppCompatActivity
     private TextView header_name;
     private BaseInfoDao baseInfoDao;
     private CourseDao courseDao;
-    private MyAdapter adapter;
+    private CourseAdapter adapter;
     private List<CourseBean> allCourse;
-    private List<CourseBean> startList;
+    private static List<CourseBean> startList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,13 +114,11 @@ public class MainActivity extends AppCompatActivity
             for (CourseBean item : list) {
                 startList.add(item);
             }
-            list = null;
         }
         for (CourseBean course : allCourse) {
             startList.add(course);
         }
     }
-
 
     private void initUI() {
         header_name.setText(stuName);
@@ -131,10 +128,8 @@ public class MainActivity extends AppCompatActivity
         }
         LinearLayoutManager manager = new LinearLayoutManager(this);
         couseList.setLayoutManager(manager);
-        adapter = new MyAdapter();
+        adapter = new CourseAdapter(startList);
         couseList.setAdapter(adapter);
-        //日期问题没解决，暂时注释掉
-        //  couseList.addOnScrollListener(new MyScrollListener());
     }
 
     Handler handler = new Handler() {
@@ -142,7 +137,7 @@ public class MainActivity extends AppCompatActivity
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    toSearchCjActivity();
+                    toScoreActivity();
                     break;
                 case 2:
                     Intent intent = new Intent(mContext, ExamActivity.class);
@@ -156,6 +151,14 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+
+    /**
+     * 跳转到成绩查询页面
+     */
+    private void toScoreActivity() {
+        Intent intent = new Intent(mContext, ScoreActivity.class);
+        startActivity(intent);
+    }
 
     //注销登录弹窗
     private void showLogoutDialog() {
@@ -188,153 +191,72 @@ public class MainActivity extends AppCompatActivity
         builder.show();
     }
 
-    /**
-     * 跳转到成绩查询页面
-     */
-    private void toSearchCjActivity() {
-        Intent intent = new Intent(mContext, ScoreActivity.class);
-        startActivity(intent);
-    }
-
-
-    class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-        private static final int NORMAL_ITEM = 0;
-
-        private static final int WEEK_ITEM = 1;
-
-        @Override
-        public long getItemId(int position) {
-            return super.getItemId(position);
-        }
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            if (viewType == NORMAL_ITEM) {
-                return new NormalViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_normal_course, parent, false));
-            } else {
-                return new WeekViewHOlder(LayoutInflater.from(mContext).inflate(R.layout.item_course, parent, false));
-            }
-        }
-
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            CourseBean courseBean = startList.get(position);
-            String week = setWeek(startList.get(position).getCourseTime());
-            if (holder instanceof WeekViewHOlder) {
-                ((WeekViewHOlder) holder).course_name.setText(courseBean.getCourseName());
-                ((WeekViewHOlder) holder).course_info.setText(courseBean.getCourstTimeDetail() + "，" + courseBean.getCourseLocation());
-                ((WeekViewHOlder) holder).course_week.setText(week);
-
-            } else if (holder instanceof NormalViewHolder) {
-                ((NormalViewHolder) holder).course_name.setText(courseBean.getCourseName());
-                ((NormalViewHolder) holder).course_info.setText(courseBean.getCourstTimeDetail() + "，" + courseBean.getCourseLocation());
-            }
-        }
-
-        @Override
-        public int getItemViewType(int position) {
-            if (position == 0) {
-                return WEEK_ITEM;
-            }
-            String currentWeek = startList.get(position).getCourseTime();
-            int prePosition = position - 1;
-            boolean isDiff = startList.get(prePosition).getCourseTime().equals(currentWeek);
-            return isDiff ? NORMAL_ITEM : WEEK_ITEM;
-        }
-
-
-        @Override
-        public int getItemCount() {
-            return startList.size();
-        }
-
-        class WeekViewHOlder extends RecyclerView.ViewHolder {
-
-            TextView course_week, course_name, course_info;
-
-            public WeekViewHOlder(View itemView) {
-                super(itemView);
-                course_week = ButterKnife.findById(itemView, R.id.course_week);
-                course_name = ButterKnife.findById(itemView, R.id.course_name);
-                course_info = ButterKnife.findById(itemView, R.id.course_info);
-            }
-
-        }
-
-        class NormalViewHolder extends RecyclerView.ViewHolder {
-
-            TextView course_name, course_info;
-
-            public NormalViewHolder(View itemView) {
-                super(itemView);
-                course_name = ButterKnife.findById(itemView, R.id.course_name);
-                course_info = ButterKnife.findById(itemView, R.id.course_info);
-            }
-        }
-
-    }
-
 
     /**
-     * 获得当前是星期几
-     *
-     * @param time
-     * @return
+     * RecylerView Adapter
      */
-    public String setWeek(String time) {
-        if (time.equals("1")) {
-            time = "周一";
-        } else if (time.equals("2")) {
-            time = "周二";
-        } else if (time.equals("3")) {
-            time = "周三";
-        } else if (time.equals("4")) {
-            time = "周四";
-        } else if (time.equals("5")) {
-            time = "周五";
-        } else if (time.equals("6")) {
-            time = "周六";
-        } else if (time.equals("7")) {
-            time = "周日";
-        }
-        return time;
-    }
-
+//    public static class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+//
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
+    /**
+     * 菜单
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            startActivity(new Intent(mContext, SettingActivity.class));
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                startActivity(new Intent(mContext, SettingActivity.class));
+                break;
+            case R.id.action_share:
+                shareApp();
+                break;
         }
 
-        return super.onOptionsItemSelected(item);
+        return true;
+    }
+
+    private void shareApp() {
+        String shareInfo = getString(R.string.share_info);
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareInfo);
+        shareIntent.setType("text/plain");
+
+        //设置分享列表的标题，并且每次都显示分享列表
+        startActivity(Intent.createChooser(shareIntent, "分享到"));
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
+    /**
+     * 侧边栏点击事件
+     *
+     * @param item
+     * @return
+     */
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.nav_search_cj) {
+        if (id == R.id.nav_score) {
             //成绩查询
             handler.sendEmptyMessageDelayed(1, 500);
-        } else if (id == R.id.nav_kscx) {
+        } else if (id == R.id.nav_exam) {
             //考试查询
             handler.sendEmptyMessageDelayed(2, 500);
         } else if (id == R.id.nav_school_card) {
             //一卡通
             handler.sendEmptyMessageDelayed(3, 500);
         } else if (id == R.id.nav_logout) {
+            //注销
             showLogoutDialog();
         }
 

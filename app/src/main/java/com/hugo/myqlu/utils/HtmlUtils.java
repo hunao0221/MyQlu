@@ -1,6 +1,6 @@
 package com.hugo.myqlu.utils;
 
-import com.hugo.myqlu.bean.ChengjiBean;
+import com.hugo.myqlu.bean.ScoreBean;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -60,13 +60,13 @@ public class HtmlUtils {
         return text;
     }
 
-    public List<ChengjiBean> parseCJTable() {
-        List<ChengjiBean> cjList = new ArrayList<>();
+    public List<ScoreBean> parseScore() {
+        List<ScoreBean> scoreList = new ArrayList<>();
         Document document = Jsoup.parse(response);
         Element dataGrid1 = document.getElementById("DataGrid1");
         Elements trs = dataGrid1.select("tbody").select("tr");
         for (int i = 0; i < trs.size(); i++) {
-            ChengjiBean bean = new ChengjiBean();
+            ScoreBean bean = new ScoreBean();
             Elements tds = trs.get(i).select("td");
             for (int j = 0; j < tds.size(); j++) {
                 switch (j) {
@@ -99,9 +99,9 @@ public class HtmlUtils {
                         break;
                 }
             }
-            cjList.add(bean);
+            scoreList.add(bean);
         }
-        return cjList;
+        return scoreList;
     }
 
     /**

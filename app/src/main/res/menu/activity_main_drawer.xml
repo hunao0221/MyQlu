@@ -3,11 +3,11 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_search_cj"
+            android:id="@+id/nav_score"
             android:icon="@mipmap/ic_view_quilt_black_24dp"
             android:title="成绩查询" />
         <item
-            android:id="@+id/nav_kscx"
+            android:id="@+id/nav_exam"
             android:icon="@mipmap/ic_pageview_black_24dp"
             android:title="考试查询" />
         <item

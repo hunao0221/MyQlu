@@ -5,6 +5,9 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="action_share">分享</string>
+
+    <string name="share_info">MyQlu可以查课表,成绩,考试，还能查一卡通消费记录,快来豌豆荚下载吧，http://www.wandoujia.com/apps/com.hugo.myqlu?utm_source=link</string>
     <string name="title_activity_checkout_cj">CheckoutCjActivity</string>
     <!--学期VIEWSTATE-->
     <string name="XQVIEWSTATE">

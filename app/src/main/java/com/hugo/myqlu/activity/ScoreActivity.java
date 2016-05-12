@@ -20,7 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hugo.myqlu.R;
-import com.hugo.myqlu.bean.ChengjiBean;
+import com.hugo.myqlu.bean.ScoreBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.utils.HtmlUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -67,7 +67,7 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
     private static String BUTTON_XQ = "%B0%B4%D1%A7%C6%DA%B2%E9%D1%AF";
     private static String BUTTON_XN = "%B0%B4%D1%A7%C4%EA%B2%E9%D1%AF";
     private static String BUTTON_ZX = "%D4%DA%D0%A3%D1%A7%CF%B0%B3%C9%BC%A8%B2%E9%D1%AF";
-    private List<ChengjiBean> cjList;
+    private List<ScoreBean> cjList;
     private ListView listview;
     private String title = "";
     private TextView tvTitle;
@@ -319,7 +319,7 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onResponse(String response) {
                 HtmlUtils cjUtils = new HtmlUtils(response);
-                cjList = cjUtils.parseCJTable();
+                cjList = cjUtils.parseScore();
                 //如果CJList的size == 1，表示没有成绩；
                 if (cjList.size() == 1) {
                     title = "当前条件没有成绩哦";

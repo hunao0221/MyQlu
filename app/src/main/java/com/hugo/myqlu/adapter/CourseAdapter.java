@@ -29,9 +29,6 @@ public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.startList = startList;
     }
 
-    public static interface OnItemClickListener {
-
-    }
 
     @Override
     public long getItemId(int position) {
@@ -88,6 +85,7 @@ public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             course_name = ButterKnife.findById(itemView, R.id.course_name);
             course_info = ButterKnife.findById(itemView, R.id.course_info);
         }
+
     }
 
     class NormalViewHolder extends RecyclerView.ViewHolder {

@@ -69,18 +69,21 @@ public class ParseCourses {
                         //基于java的web开发(JSP/Sevlet) 周三第5,6节{第1-16周} 尹红丽 1号公教楼602
                         String[] strings = text.split("hu");
                         String name = "";
-
-                        if (strings.length > 4) {
-                            name = strings[0] + "-" + strings[1].substring(strings[1].indexOf("|") + 1, strings[1].indexOf("}"));
-                            String name2 = strings[5] + "-" + strings[6].substring(strings[6].indexOf("|") + 1, strings[6].indexOf("}"));
-                            name = name + "\n" + name2;
-                        } else {
-                            name = strings[0];
-                            if (strings[1].contains("单周")) {
-                                name = name + " -单周";
-                            } else if (strings[1].contains("双周")) {
-                                name = name + " -双周";
+                        try {
+                            if (strings.length > 4) {
+                                name = strings[0] + "-" + strings[1].substring(strings[1].indexOf("|") + 1, strings[1].indexOf("}"));
+                                String name2 = strings[5] + "-" + strings[6].substring(strings[6].indexOf("|") + 1, strings[6].indexOf("}"));
+                                name = name + "\n" + name2;
+                            } else {
+                                name = strings[0];
+                                if (strings[1].contains("单周")) {
+                                    name = name + " -单周";
+                                } else if (strings[1].contains("双周")) {
+                                    name = name + " -双周";
+                                }
                             }
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            course.setCourseName("暂无");
                         }
                         course.setCourseName(name);
                         course.setCourseTime(String.valueOf(j));
