@@ -4,7 +4,7 @@ package com.hugo.myqlu.bean;
  * @auther Hugo
  * Created on 2016/4/21 14:31.
  */
-public class ChengjiBean {
+public class ScoreBean {
     private String courseId;
     private String courseName;
     private String courseXz;
@@ -89,7 +89,7 @@ public class ChengjiBean {
 
     @Override
     public String toString() {
-        return "ChengjiBean{" +
+        return "ScoreBean{" +
                 courseId + '\'' +
                 courseBj + '\'' +
                 courseName + '\'' +

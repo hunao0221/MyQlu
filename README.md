@@ -8,17 +8,30 @@
 - 一卡通（饭卡）当日流水查询
 - 一卡通一键挂失
 
+##更新：
+####2016/05/08 MyQlu1.0.2
+> 1.新增一卡通消费历史查询  
+> 2.考试查询下拉刷新  
+> 3.优化UI细节
+
 ##下载：
-- [Github下载](https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.1.apk)
-- 百度云：[http://pan.baidu.com/s/1nvKnKql](http://pan.baidu.com/s/1nvKnKql)
+####1.0.2
+>- <http://pan.baidu.com/s/1kV8MRx9>
+- <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.2.apk>
+
+####1.0.1
+>- <http://pan.baidu.com/s/1dFNSlFV>
+- <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.1.apk>
+
 
 ## 应用截图
-![主页](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-23.png)
-![侧边栏](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-15.png)
-![成绩查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-31-04.png)
-![考试查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/ks.png)
-![流水查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-30-56.png)
-![挂失](https://raw.githubusercontent.com/hunao0221/Res/master/photos/enframe_2016-05-02-13-30-48.png)
+![主页](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-52-04.png)
+![侧边栏](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-51-42.png)
+![成绩查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-47-22.png)
+![考试查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-57-09.png)
+![流水查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-49-25.png)
+![历史查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-49-19.png)
+![挂失](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-12-37-03.png)
 
 ## dependencies：
 - [**hongyangAndroid/okhttp-utils**](https://github.com/hongyangAndroid/okhttp-utils)

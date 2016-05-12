@@ -16,11 +16,11 @@ import java.util.List;
  * @auther Hugo
  * Created on 2016/4/23 8:56.
  */
-public class ParseKbFromHtml {
+public class ParseCourses {
 
     private static List<CourseBean> courseList = new ArrayList<>();
 
-    public static List<CourseBean> getCourses(String response) {
+    public static List<CourseBean> getKB(String response) {
         response = response.replace("<br>", "hu");
         Document document = Jsoup.parse(response);
         Element table1 = document.getElementById("Table1");
@@ -68,10 +68,8 @@ public class ParseKbFromHtml {
                         String text = colum.text();
                         //基于java的web开发(JSP/Sevlet) 周三第5,6节{第1-16周} 尹红丽 1号公教楼602
                         String[] strings = text.split("hu");
-                        for (String string : strings) {
-                            System.out.println(string);
-                        }
                         String name = "";
+
                         if (strings.length > 4) {
                             name = strings[0] + "-" + strings[1].substring(strings[1].indexOf("|") + 1, strings[1].indexOf("}"));
                             String name2 = strings[5] + "-" + strings[6].substring(strings[6].indexOf("|") + 1, strings[6].indexOf("}"));
@@ -84,22 +82,27 @@ public class ParseKbFromHtml {
                                 name = name + " -双周";
                             }
                         }
+                        course.setCourseName(name);
+                        course.setCourseTime(String.valueOf(j));
+                        course.setCourstTimeDetail(timeDetail);
+                        /**
+                         * 有的课程不规范，缺少信息，导致解析错误，程序崩溃
+                         */
+                        String teacher = "";
                         try {
-                            int length = strings.length;
-                            course.setCourseName(name);
-                            course.setCourseTime(String.valueOf(j));
-                            course.setCourstTimeDetail(timeDetail);
-                            course.setCourseTeacher(strings[2]);
-                            if (length >= 4) {
-                                course.setCourseLocation(strings[3]);
-                            } else {
-                                course.setCourseLocation("暂无");
-                            }
-                            courseList.add(course);
+                            teacher = strings[2];
                         } catch (ArrayIndexOutOfBoundsException e) {
-
+                            teacher = "暂无";
                         }
-
+                        String location = "";
+                        try {
+                            location = strings[3];
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            location = "暂无";
+                        }
+                        course.setCourseTeacher(teacher);
+                        course.setCourseLocation(location);
+                        courseList.add(course);
                     }
                 }
             }

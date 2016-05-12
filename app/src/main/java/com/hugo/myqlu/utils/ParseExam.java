@@ -16,7 +16,7 @@ import java.util.List;
  * @auther Hugo
  * Created on 2016/4/28 12:04.
  */
-public class ParseKSInfoFromHtml {
+public class ParseExam {
     public static List<ExamBean> parse(String response) {
         Document document = Jsoup.parse(response);
         Element table = document.getElementById("DataGrid1");

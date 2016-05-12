@@ -41,11 +41,11 @@
 
 
     <TextView
-        android:textColor="@color/primary_text"
         android:id="@+id/zhang_money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="5dp"
         android:text="8.88元"
+        android:textColor="@color/primary_text"
         android:textSize="16sp" />
 </LinearLayout>

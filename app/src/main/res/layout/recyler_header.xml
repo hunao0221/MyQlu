@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:padding="5dp">
+
+    <ImageView
+        android:id="@+id/iv_type"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center"
+        android:src="@mipmap/zhuanzhang" />
+
+    <TextView
+        android:id="@+id/tv_title_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="10dp"
+        android:layout_weight="1"
+        android:text="您今日消费了"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tv_title_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginRight="5dp"
+        android:text="8.88元"
+        android:textColor="@color/primary_text"
+        android:textSize="16sp" />
+</LinearLayout>
