@@ -22,16 +22,16 @@
 
 ##下载：
 ####1.2.0
-> - http://pan.baidu.com/s/1dFnuAIX
-> - <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.2.0.apk>
+> - http://pan.baidu.com/s/1i4VB3UH
+> - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.2.0.apk>
 
 ####1.0.2
 >- <http://pan.baidu.com/s/1kV8MRx9>
-- <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.2.apk>
+- <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.0.2.apk>
 
 ####1.0.1
 >- <http://pan.baidu.com/s/1dFNSlFV>
-- <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.1.apk>
+- <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.0.1.apk>
 
 
 ## 应用截图

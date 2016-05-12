@@ -22,14 +22,14 @@
             app:popupTheme="@style/AppTheme.PopupOverlay">
 
             <RelativeLayout
-                android:clickable="true"
                 android:id="@+id/rl_date"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_centerInParent="true"
                 android:layout_gravity="right"
                 android:layout_marginRight="20dp"
-                android:background="@mipmap/rili_shense">
+                android:background="@mipmap/rili_shense"
+                android:clickable="true">
 
                 <TextView
                     android:id="@+id/tv_date"

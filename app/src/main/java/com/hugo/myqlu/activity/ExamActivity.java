@@ -104,7 +104,7 @@ public class ExamActivity extends AppCompatActivity {
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_kaoshi, parent, false));
+            return new ViewHolder(LayoutInflater.from(mContext).inflate(R.layout.item_exam, parent, false));
         }
 
         @Override
