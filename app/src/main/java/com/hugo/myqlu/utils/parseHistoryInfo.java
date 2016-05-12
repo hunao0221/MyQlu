@@ -42,7 +42,6 @@ public class ParseHistoryInfo {
     public static String getLastAction(String response) {
         Document document = Jsoup.parse(response);
         String lastAction = document.select("form").attr("action");
-        System.out.println("lastAction :" + lastAction);
         return lastAction;
     }
 
@@ -54,7 +53,6 @@ public class ParseHistoryInfo {
         Element lastTr = trs.get(trs.size() - 1);
         String text = lastTr.text();
         text = text.substring(text.indexOf("总计交易额为:") + 7, text.indexOf("（元）")).trim();
-        System.out.println("text :" + text);
         return text;
     }
 

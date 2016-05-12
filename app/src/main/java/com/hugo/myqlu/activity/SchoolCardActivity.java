@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -275,7 +274,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                             tv_error.setVisibility(View.VISIBLE);
                         }
                         tv_error.setText("登陆失败");
-                        System.out.println(e.getMessage());
                     }
 
                     @Override
@@ -284,7 +282,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                             pbLogin.setVisibility(View.GONE);
                         }
                         View focusView = null;
-                        System.out.println("onResponse");
                         if (response.contains("验证码不正确")) {
                             etCode.setError("验证码错误");
                             focusView = etCode;
@@ -306,7 +303,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                             //登陆成功
                             pbLogin.setVisibility(View.INVISIBLE);
                             //初始化用户数据
-                            System.out.println("登录成功");
                             dialog.dismiss();
                             getUserInfo();
                         }
@@ -324,7 +320,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                 .build().execute(new StringCallback() {
             @Override
             public void onError(Call call, Exception e) {
-                System.out.println("出错了o");
+                //获取基本信息失败
             }
 
             @Override
@@ -514,18 +510,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                     break;
                 case R.id.fab:
                     fabMenu.close(true);
-
-                    if (baseInfoMap == null) {
-                        if (baseInfoMap == null) {
-                            Snackbar.make(rootView, "您还没有登录", Snackbar.LENGTH_LONG).setAction("登录", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    showLoginDialog();
-                                }
-                            }).show();
-                        }
-                    } else
-                        showLockCardDialog();
+                    showLockCardDialog();
                     break;
                 case R.id.fab_query:
                     //显示历史查询弹窗
@@ -538,6 +523,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                     break;
                 case R.id.rl_date:
                     if (todayZhangList != null) {
+                        //切换到今日消费
                         total = todayTotal;
                         consumeAdapter = new ConsumeAdapter(todayZhangList, true);
                         consumeAdapter.setTitleInfo(titleInfo);

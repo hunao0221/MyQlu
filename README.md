@@ -1,6 +1,6 @@
 # MyQlu
 ## 应用介绍
-  MyQlu是齐鲁工业大学校园客户端，仅限齐鲁工业大学学生使用，部分功能只能在校园网环境下使用
+  MyQlu是齐鲁工业大学校园客户端，仅限齐鲁工业大学学生使用，部分功能只能在校园网环境下使用,本应用已上线 [豌豆荚](http://www.wandoujia.com/apps/com.hugo.myqlu)
 ## 现有功能：
 - 课程查询
 - 成绩查询
@@ -9,12 +9,22 @@
 - 一卡通一键挂失
 
 ##更新：
+####2016/05/08 MyQlu1.2.0
+> 1.全新的一卡通UI  
+> 2.新增一卡通本月内消费查询  
+> 3.更快的成绩查询
+> 修复部分专业同学登录闪退的bug
+
 ####2016/05/08 MyQlu1.0.2
 > 1.新增一卡通消费历史查询  
 > 2.考试查询下拉刷新  
 > 3.优化UI细节
 
 ##下载：
+####1.2.0
+> - http://pan.baidu.com/s/1dFnuAIX
+> - <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.2.0.apk>
+
 ####1.0.2
 >- <http://pan.baidu.com/s/1kV8MRx9>
 - <https://github.com/hunao0221/hunao0221.github.io/raw/master/myqlu1.0.2.apk>
@@ -29,8 +39,8 @@
 ![侧边栏](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-51-42.png)
 ![成绩查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-47-22.png)
 ![考试查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-57-09.png)
-![流水查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-49-25.png)
-![历史查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-49-19.png)
+![流水查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.2.0/enframe_2016-05-12-14-12-38.png)
+![历史查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.2.0/enframe_2016-05-12-14-12-54.png)
 ![挂失](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-12-37-03.png)
 
 ## dependencies：

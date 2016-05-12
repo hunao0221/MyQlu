@@ -52,7 +52,6 @@ public class ParseLiushui {
         Element lastTr = trs.get(trs.size() - 1);
         String text = lastTr.text();
         text = text.substring(text.indexOf("总交易额为:") + 6, text.indexOf("（元）")).trim();
-        System.out.println("text :" + text);
         return text;
     }
 }
