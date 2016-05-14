@@ -51,6 +51,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
             drawVertical(c, parent);
         } else {
             drawHorizontal(c, parent);
+
         }
 
     }
