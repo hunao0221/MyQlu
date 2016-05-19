@@ -62,7 +62,7 @@
             android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_lock_idle_lock"
+            android:src="@mipmap/ic_lock_outline_white_24dp"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_label="挂失"
             fab:fab_size="normal" />
@@ -71,7 +71,7 @@
             android:id="@+id/fab_query"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_menu_search"
+            android:src="@mipmap/ic_search_white_24dp"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_label="历史"
             fab:fab_size="mini" />

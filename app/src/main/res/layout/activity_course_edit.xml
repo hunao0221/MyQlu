@@ -33,10 +33,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
-        android:layout_marginTop="10dp"
         android:id="@+id/edit_fragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 
@@ -46,6 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:src="@mipmap/ic_mode_edit_white_24dp"
+        app:backgroundTint="#448AFF"
+        app:fab_size="mini"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" />
 </android.support.design.widget.CoordinatorLayout>

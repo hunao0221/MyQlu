@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.dao.CourseDao;
@@ -116,9 +117,11 @@ public class CourseEditActivity extends AppCompatActivity {
 
             boolean update = courseDao.update(id, name, setTime(week), timeDetail, teacher, location);
             if (update) {
+                //修改成功
                 EventBus.getDefault().post(new UpdateDataEvent(""));
+            } else {
+                Toast.makeText(mComtext, "修改失败", Toast.LENGTH_SHORT).show();
             }
-
         }
         flag = !flag;
     }
