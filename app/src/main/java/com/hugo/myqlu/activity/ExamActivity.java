@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.ExamBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
-import com.hugo.myqlu.dao.KaoshiDao;
+import com.hugo.myqlu.dao.ExamDao;
 import com.hugo.myqlu.utils.ParseExam;
 import com.hugo.myqlu.utils.TextEncoderUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
@@ -50,7 +50,7 @@ public class ExamActivity extends AppCompatActivity {
     private String kscxUrl;
     private List<ExamBean> refreshList;
     private String stuNameEncoding;
-    private KaoshiDao kaoshiDao;
+    private ExamDao examDao;
     private MyAdapter adapter;
 
     @Override
@@ -78,8 +78,8 @@ public class ExamActivity extends AppCompatActivity {
         password = baseInfoDao.query("password");
         String stuName = baseInfoDao.query("stuName");
         stuNameEncoding = TextEncoderUtils.encoding(stuName);
-        kaoshiDao = new KaoshiDao(mContext);
-        examInfoList = kaoshiDao.queryAll();
+        examDao = new ExamDao(mContext);
+        examInfoList = examDao.queryAll();
 
         refresh.setColorSchemeResources(R.color.colorPrimary);
         if (examInfoList.size() == 0) {
@@ -207,15 +207,15 @@ public class ExamActivity extends AppCompatActivity {
                 refreshList = ParseExam.parse(response);
                 for (ExamBean examBean : refreshList) {
                     System.out.println(examBean.getExamName());
-                    if (kaoshiDao.query(examBean.getExamName())) {
+                    if (examDao.query(examBean.getExamName())) {
                         //更新数据
-                        boolean update = kaoshiDao.update(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
+                        boolean update = examDao.update(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
                     } else {
                         //插入数据库
-                        boolean add = kaoshiDao.add(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
+                        boolean add = examDao.add(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
                     }
                 }
-                examInfoList = kaoshiDao.queryAll();
+                examInfoList = examDao.queryAll();
                 adapter.notifyDataSetChanged();
                 refresh.setRefreshing(false);
             }

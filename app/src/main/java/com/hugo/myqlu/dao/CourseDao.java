@@ -105,7 +105,6 @@ public class CourseDao {
         return course == 1;
     }
 
-
     public boolean deleteAll() {
         CourseHelper helper = new CourseHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -113,7 +112,6 @@ public class CourseDao {
         db.close();
         return delete != 0;
     }
-
 
     public boolean delete(String id) {
         CourseHelper helper = new CourseHelper(mContext, 1);

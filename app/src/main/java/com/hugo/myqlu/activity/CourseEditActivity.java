@@ -17,8 +17,11 @@ import android.widget.TextView;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.dao.CourseDao;
+import com.hugo.myqlu.event.UpdateDataEvent;
 import com.hugo.myqlu.fragment.CourseEditFramgment;
 import com.hugo.myqlu.fragment.CourseFragment;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -113,7 +116,7 @@ public class CourseEditActivity extends AppCompatActivity {
 
             boolean update = courseDao.update(id, name, setTime(week), timeDetail, teacher, location);
             if (update) {
-                System.out.println("修改成功");
+                EventBus.getDefault().post(new UpdateDataEvent(""));
             }
 
         }
@@ -174,5 +177,10 @@ public class CourseEditActivity extends AppCompatActivity {
             }
         });
         builder.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

@@ -15,10 +15,10 @@ import java.util.List;
  * @auther Hugo
  * Created on 2016/4/28 13:23.
  */
-public class KaoshiDao {
+public class ExamDao {
     private Context mContext;
 
-    public KaoshiDao(Context mContext) {
+    public ExamDao(Context mContext) {
         this.mContext = mContext;
     }
 

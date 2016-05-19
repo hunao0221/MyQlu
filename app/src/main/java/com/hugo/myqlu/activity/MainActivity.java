@@ -26,8 +26,12 @@ import com.hugo.myqlu.adapter.CourseAdapter;
 import com.hugo.myqlu.bean.CourseBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.CourseDao;
-import com.hugo.myqlu.dao.KaoshiDao;
+import com.hugo.myqlu.dao.ExamDao;
+import com.hugo.myqlu.event.UpdateDataEvent;
 import com.hugo.myqlu.utils.SpUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,11 +70,15 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("课程");
         setSupportActionBar(toolbar);
+        EventBus.getDefault().register(this);
+        initData();
+        initView();
+        initUI();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+
+    @Subscribe
+    public void onEvent(UpdateDataEvent event) {
         initData();
         initView();
         initUI();
@@ -123,10 +131,6 @@ public class MainActivity extends AppCompatActivity
         for (CourseBean course : allCourse) {
             startList.add(course);
         }
-
-        for (CourseBean course : startList) {
-            System.out.println("所有ID --->" + course.getId() + "");
-        }
     }
 
     private void initUI() {
@@ -142,9 +146,7 @@ public class MainActivity extends AppCompatActivity
         adapter.setOnItemClickListener(new CourseAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                System.out.println("position----->" + position);
                 int id = startList.get(position).getId();
-                System.out.println("MainActivity ---->" + id + "");
                 Intent intent = new Intent(mContext, CourseEditActivity.class);
                 intent.putExtra("id", id + "");
                 startActivity(intent);
@@ -167,7 +169,9 @@ public class MainActivity extends AppCompatActivity
                     Intent cardIntent = new Intent(mContext, SchoolCardActivity.class);
                     startActivity(cardIntent);
                     break;
-
+                case 4:
+                    startActivity(new Intent(mContext, SettingActivity.class));
+                    break;
             }
         }
     };
@@ -192,8 +196,8 @@ public class MainActivity extends AppCompatActivity
                 //清除所有用户数据
                 courseDao.deleteAll();
                 baseInfoDao.deleteAll();
-                KaoshiDao kaoshiDao = new KaoshiDao(mContext);
-                kaoshiDao.deleteAll();
+                ExamDao examDao = new ExamDao(mContext);
+                examDao.deleteAll();
                 //进入到loginActivity
                 sp.edit().putBoolean("isFirstIn", true).commit();
                 allCourse = null;
@@ -211,11 +215,6 @@ public class MainActivity extends AppCompatActivity
         builder.show();
     }
 
-
-    /**
-     * RecylerView Adapter
-     */
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -232,17 +231,17 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case R.id.action_settings:
-                startActivity(new Intent(mContext, SettingActivity.class));
-                break;
-            case R.id.action_share:
-                shareApp();
+            case R.id.add:
+                System.out.println("add crose");
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
 
+    /**
+     * 分享app
+     */
     private void shareApp() {
         String shareInfo = getString(R.string.share_info);
         Intent shareIntent = new Intent();
@@ -276,6 +275,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             //注销
             showLogoutDialog();
+        } else if (id == R.id.nav_settings) {
+            //设置
+            handler.sendEmptyMessageDelayed(4, 500);
+        } else if (id == R.id.nav_share) {
+            //分享
+            shareApp();
         }
 
         drawer.closeDrawer(GravityCompat.START);
@@ -294,5 +299,12 @@ public class MainActivity extends AppCompatActivity
             i.addCategory(Intent.CATEGORY_HOME);
             startActivity(i);
         }
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

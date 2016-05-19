@@ -7,18 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.CourseBean;
 import com.hugo.myqlu.dao.CourseDao;
+import com.hugo.myqlu.event.UpdateDataEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 
 public class CourseFragment extends Fragment {
-
 
     @Bind(R.id.name)
     TextView name;
@@ -46,11 +48,12 @@ public class CourseFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
         activity = getActivity();
+        initData();
+        EventBus.getDefault().register(this);
     }
 
     private void initData() {
         String id = activity.getIntent().getStringExtra("id");
-        System.out.println("id ---->" + id);
         courseDao = new CourseDao(activity);
         courseBean = courseDao.queryById(id);
         courseName = courseBean.getCourseName();
@@ -60,30 +63,20 @@ public class CourseFragment extends Fragment {
         courstTimeDetail = courseBean.getCourstTimeDetail();
     }
 
+    @Subscribe
+    public void onEvent(UpdateDataEvent event) {
+        initData();
+        initUI();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.course_info_framgment, container, false);
         ButterKnife.bind(this, view);
-        initData();
-        initListenenr();
+        initUI();
         return view;
     }
 
-    private void initListenenr() {
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(activity, "点我了", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        initUI();
-    }
 
     private void initUI() {
         name.setText(courseName);
@@ -118,5 +111,6 @@ public class CourseFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+        EventBus.getDefault().unregister(this);
     }
 }

@@ -15,9 +15,18 @@
             android:icon="@mipmap/ic_account_balance_wallet_black_24dp"
             android:title="一卡通" />
         <item
+            android:id="@+id/nav_settings"
+            android:icon="@mipmap/ic_settings_black_24dp"
+            android:title="设置" />
+        <item
             android:id="@+id/nav_logout"
             android:icon="@mipmap/ic_supervisor_account_black_24dp"
             android:title="注销" />
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@mipmap/ic_share_black_24dp"
+            android:title="分享" />
+
     </group>
 
 </menu>

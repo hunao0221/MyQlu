@@ -26,7 +26,7 @@ import com.hugo.myqlu.bean.CourseBean;
 import com.hugo.myqlu.bean.ExamBean;
 import com.hugo.myqlu.dao.BaseInfoDao;
 import com.hugo.myqlu.dao.CourseDao;
-import com.hugo.myqlu.dao.KaoshiDao;
+import com.hugo.myqlu.dao.ExamDao;
 import com.hugo.myqlu.utils.HtmlUtils;
 import com.hugo.myqlu.utils.ParseCourses;
 import com.hugo.myqlu.utils.ParseExam;
@@ -386,12 +386,12 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         }
 
         //保存考试信息
-        KaoshiDao kaoshiDao = new KaoshiDao(mContext);
+        ExamDao examDao = new ExamDao(mContext);
         for (ExamBean exam : ksInfoList) {
             String examName = exam.getExamName();
             String examTime = exam.getExamTime();
             String examLocation = exam.getExamLocation();
-            boolean addSuccess = kaoshiDao.add(examName, examTime, examLocation);
+            boolean addSuccess = examDao.add(examName, examTime, examLocation);
             if (!addSuccess) {
                 waitDialog.dismiss();
                 saveSucess = false;

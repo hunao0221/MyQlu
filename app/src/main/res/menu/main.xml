@@ -6,18 +6,6 @@
         android:id="@+id/add"
         android:icon="@mipmap/ic_add_white_24dp"
         android:orderInCategory="20"
-        android:showAsAction="ifRoom"
-        android:title="添加" />
-
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="50"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_share"
-        android:orderInCategory="50"
-        android:title="@string/action_share"
-        app:showAsAction="never" />
-
+        android:title="添加"
+        app:showAsAction="ifRoom" />
 </menu>
