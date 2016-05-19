@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/add"
+        android:icon="@mipmap/ic_add_white_24dp"
+        android:orderInCategory="20"
+        android:showAsAction="ifRoom"
+        android:title="添加" />
+
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="50"
@@ -11,4 +19,5 @@
         android:orderInCategory="50"
         android:title="@string/action_share"
         app:showAsAction="never" />
+
 </menu>

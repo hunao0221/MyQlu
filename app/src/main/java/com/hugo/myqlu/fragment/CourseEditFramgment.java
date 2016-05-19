@@ -1,13 +1,17 @@
 package com.hugo.myqlu.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,7 +32,7 @@ public class CourseEditFramgment extends Fragment {
     @Bind(R.id.name)
     EditText name;
     @Bind(R.id.week)
-    TextView week;
+    TextView tvWeek;
     @Bind(R.id.start)
     TextView start;
     @Bind(R.id.end)
@@ -45,10 +49,11 @@ public class CourseEditFramgment extends Fragment {
     private String courseTime;
     private String courseTeacher;
     private String courstTimeDetail;
+    private String[] times;
+    private ListView weekList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         activity = getActivity();
         initData();
@@ -56,7 +61,6 @@ public class CourseEditFramgment extends Fragment {
 
     private void initData() {
         String id = activity.getIntent().getStringExtra("id");
-        System.out.println("id ---->" + id);
         courseDao = new CourseDao(activity);
         courseBean = courseDao.queryById(id + "");
         courseName = courseBean.getCourseName();
@@ -71,22 +75,9 @@ public class CourseEditFramgment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.course_edit_fragment, container, false);
         ButterKnife.bind(this, view);
-        initListener();
         return view;
     }
 
-    private void initListener() {
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                TimePicker timePicke = new TimePicker(activity);
-                timePicke.setIs24HourView(true);
-                builder.setView(timePicke);
-                builder.show();
-            }
-        });
-    }
 
     @Override
     public void onResume() {
@@ -96,10 +87,10 @@ public class CourseEditFramgment extends Fragment {
 
     private void initUI() {
         name.setText(courseName);
-        week.setText(getWeek(courseTime));
+        tvWeek.setText(getWeek(courseTime));
         location.setText(courseLocation);
         teacher.setText(courseTeacher);
-        String[] times = courstTimeDetail.split("-");
+        times = courstTimeDetail.split("-");
         start.setText(times[0]);
         end.setText(times[1]);
     }
@@ -137,17 +128,54 @@ public class CourseEditFramgment extends Fragment {
                 showWeekDialog();
                 break;
             case R.id.start:
+                showTimeDialog(start, times[0]);
                 break;
             case R.id.end:
+                showTimeDialog(end, times[1]);
                 break;
         }
     }
 
+    private void showTimeDialog(final TextView tvTime, String time) {
+        String hour = time.split(":")[0];
+        String minute = time.split(":")[1];
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final TimePicker timePicke = new TimePicker(activity);
+        timePicke.setIs24HourView(true);
+        timePicke.setMinute(Integer.parseInt(minute));
+        timePicke.setHour(Integer.parseInt(hour));
+        builder.setView(timePicke);
+        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //获得新的时间
+                tvTime.setText(getTimeFormat(timePicke.getHour()) + ":" + getTimeFormat(timePicke.getMinute()));
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private String getTimeFormat(int time) {
+        String s = "" + time;
+        if (s.length() == 1) {
+            s = "0" + s;
+        }
+        return s;
+    }
+
     private void showWeekDialog() {
         final String[] week = new String[]{"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final View view = View.inflate(activity, R.layout.week_dialog, null);
-        ListView weekList = (ListView) view.findViewById(R.id.week_list);
+        weekList = (ListView) view.findViewById(R.id.week_list);
         weekList.setAdapter(new BaseAdapter() {
             @Override
             public int getCount() {
@@ -173,8 +201,21 @@ public class CourseEditFramgment extends Fragment {
             }
         });
 
-
         builder.setView(view);
-        builder.show();
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        weekList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                tvWeek.setText(week[position]);
+                alertDialog.dismiss();
+            }
+        });
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
 }

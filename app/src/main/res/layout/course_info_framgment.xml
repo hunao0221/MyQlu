@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:tag="normal"
     tools:context=".fragment.CourseEditFramgment">
 
     <LinearLayout
@@ -30,18 +31,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?listPreferredItemHeight"
-        android:gravity="center">
+        android:layout_height="?listPreferredItemHeight">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
+            android:layout_marginTop="9dp"
             android:src="@mipmap/ic_schedule_black_24dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginLeft="20dp"
             android:orientation="vertical">
 

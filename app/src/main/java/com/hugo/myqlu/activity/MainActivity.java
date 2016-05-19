@@ -66,6 +66,11 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("课程");
         setSupportActionBar(toolbar);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         initData();
         initView();
         initUI();
@@ -234,8 +239,9 @@ public class MainActivity extends AppCompatActivity
                 shareApp();
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
+
 
     private void shareApp() {
         String shareInfo = getString(R.string.share_info);

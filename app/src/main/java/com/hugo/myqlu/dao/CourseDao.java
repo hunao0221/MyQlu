@@ -101,7 +101,7 @@ public class CourseDao {
         values.put("timedetail", timeDetail);
         values.put("teacher", teacher);
         values.put("location", location);
-        int course = db.update("course", values, "id=?", new String[]{id});
+        int course = db.update("course", values, "_id=?", new String[]{id});
         return course == 1;
     }
 
@@ -114,10 +114,11 @@ public class CourseDao {
         return delete != 0;
     }
 
-    public boolean delete(String name, String time) {
+
+    public boolean delete(String id) {
         CourseHelper helper = new CourseHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
-        int delete = db.delete("course", "name=? and time=?", new String[]{name, time});
+        int delete = db.delete("course", "_id=?", new String[]{id});
         db.close();
         return delete != 0;
     }

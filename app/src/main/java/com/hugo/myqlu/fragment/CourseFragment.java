@@ -46,7 +46,6 @@ public class CourseFragment extends Fragment {
 
         super.onCreate(savedInstanceState);
         activity = getActivity();
-        initData();
     }
 
     private void initData() {
@@ -66,6 +65,7 @@ public class CourseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.course_info_framgment, container, false);
         ButterKnife.bind(this, view);
+        initData();
         initListenenr();
         return view;
     }
