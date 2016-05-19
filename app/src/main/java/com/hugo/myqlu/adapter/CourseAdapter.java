@@ -1,5 +1,6 @@
 package com.hugo.myqlu.adapter;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,16 @@ public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public CourseAdapter(List<CourseBean> startList) {
         this.startList = startList;
+    }
+
+    private OnItemClickListener onItemClickListener;
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(View view, int position);
     }
 
 
@@ -75,27 +86,36 @@ public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         return startList.size();
     }
 
-    class WeekViewHOlder extends RecyclerView.ViewHolder {
+    class WeekViewHOlder extends NormalViewHolder {
 
-        TextView course_week, course_name, course_info;
+        TextView course_week;
 
         public WeekViewHOlder(View itemView) {
             super(itemView);
             course_week = ButterKnife.findById(itemView, R.id.course_week);
-            course_name = ButterKnife.findById(itemView, R.id.course_name);
-            course_info = ButterKnife.findById(itemView, R.id.course_info);
         }
-
     }
 
-    class NormalViewHolder extends RecyclerView.ViewHolder {
+    class NormalViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView course_name, course_info;
+        CardView course_card;
 
         public NormalViewHolder(View itemView) {
             super(itemView);
             course_name = ButterKnife.findById(itemView, R.id.course_name);
             course_info = ButterKnife.findById(itemView, R.id.course_info);
+            course_card = ButterKnife.findById(itemView, R.id.card_course);
+            course_card.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.card_course) {
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(v, getAdapterPosition());
+                }
+            }
         }
     }
 

@@ -118,6 +118,10 @@ public class MainActivity extends AppCompatActivity
         for (CourseBean course : allCourse) {
             startList.add(course);
         }
+
+        for (CourseBean course : startList) {
+            System.out.println("所有ID --->" + course.getId() + "");
+        }
     }
 
     private void initUI() {
@@ -130,6 +134,17 @@ public class MainActivity extends AppCompatActivity
         couseList.setLayoutManager(manager);
         adapter = new CourseAdapter(startList);
         couseList.setAdapter(adapter);
+        adapter.setOnItemClickListener(new CourseAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                System.out.println("position----->" + position);
+                int id = startList.get(position).getId();
+                System.out.println("MainActivity ---->" + id + "");
+                Intent intent = new Intent(mContext, CourseEditActivity.class);
+                intent.putExtra("id", id + "");
+                startActivity(intent);
+            }
+        });
     }
 
     Handler handler = new Handler() {
@@ -195,9 +210,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * RecylerView Adapter
      */
-//    public static class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-//
-//    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -221,7 +234,6 @@ public class MainActivity extends AppCompatActivity
                 shareApp();
                 break;
         }
-
         return true;
     }
 

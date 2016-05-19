@@ -8,9 +8,9 @@ import android.database.sqlite.SQLiteOpenHelper;
  * @auther Hugo
  * Created on 2016/4/28 12:48.
  */
-public class KsHelper extends SQLiteOpenHelper {
+public class ExamHelper extends SQLiteOpenHelper {
 
-    public KsHelper(Context context, int version) {
+    public ExamHelper(Context context, int version) {
         super(context, "ksinfo.db", null, version);
     }
 

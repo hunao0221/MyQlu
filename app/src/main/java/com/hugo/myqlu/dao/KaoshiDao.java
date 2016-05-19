@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.hugo.myqlu.bean.ExamBean;
-import com.hugo.myqlu.db.KsHelper;
+import com.hugo.myqlu.db.ExamHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class KaoshiDao {
     }
 
     public boolean add(String examname, String examtime, String examlocation) {
-        KsHelper helper = new KsHelper(mContext, 1);
+        ExamHelper helper = new ExamHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("examname", examname);
@@ -35,7 +35,7 @@ public class KaoshiDao {
 
     public boolean query(String name) {
         boolean flag = false;
-        KsHelper helper = new KsHelper(mContext, 1);
+        ExamHelper helper = new ExamHelper(mContext, 1);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query("kaoshiinfo", null, "examname=?", new String[]{name}, null, null, null, null);
         if (cursor.moveToNext()) {
@@ -52,7 +52,7 @@ public class KaoshiDao {
 
 
     public List<ExamBean> queryAll() {
-        KsHelper helper = new KsHelper(mContext, 1);
+        ExamHelper helper = new ExamHelper(mContext, 1);
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query("kaoshiinfo", null, null, null, null, null, null);
         List<ExamBean> examList = new ArrayList<>();
@@ -72,7 +72,7 @@ public class KaoshiDao {
     }
 
     public boolean update(String name, String time, String location) {
-        KsHelper helper = new KsHelper(mContext, 1);
+        ExamHelper helper = new ExamHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("examtime", time);
@@ -82,7 +82,7 @@ public class KaoshiDao {
     }
 
     public void deleteAll() {
-        KsHelper helper = new KsHelper(mContext, 1);
+        ExamHelper helper = new ExamHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
         int kaoshi = db.delete("kaoshiinfo", null, null);
     }

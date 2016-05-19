@@ -10,6 +10,15 @@ public class CourseBean {
     private String courstTimeDetail;
     private String courseTeacher;
     private String courseLocation;
+    private int id;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getCourseLocation() {
         return courseLocation;
