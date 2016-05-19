@@ -192,12 +192,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    /**
-     * RecylerView Adapter
-     */
-//    public static class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-//
-//    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);

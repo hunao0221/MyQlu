@@ -142,10 +142,6 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
                     public void onError(Call call, Exception e) {
                         //加载学年失败，原因：没有登录，或者已经掉线,静默登陆
                         Toast.makeText(mContext, "数据加载失败,成绩查询尚未开放", Toast.LENGTH_SHORT).show();
-                        if (stuXH != null && password != null) {
-                            //利用无需验证码的登录界面自动登录
-                            requestLoginByNoCode();
-                        }
                     }
 
                     @Override

@@ -7,8 +7,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,31 +25,6 @@ public class HtmlUtils {
         this.response = response;
     }
 
-    public String encoder(String response) {
-        //http://210.44.159.4/xscj.aspx?xh=201311011011&xm=胡洪源&gnmkdm=N121605
-
-        Document document = Jsoup.parse(response);
-        Elements links = document.select("a[href]");
-        StringBuffer buffer = new StringBuffer();
-        for (Element link : links) {
-            if (link.text().equals("成绩查询")) {
-                buffer.append(link.attr("href"));
-            }
-        }
-        String url = buffer.toString();
-        // String cjcxUrl = mainUrl + "/" + url;
-        int indexXM = url.indexOf("xm");
-        int indexStrart = url.indexOf("=", indexXM);
-        int indexEnd = url.lastIndexOf("&");
-        String name = url.substring(indexStrart + 1, indexEnd);
-        try {
-            String encodeName = URLEncoder.encode(name, "utf-8");
-            url = url.replace(name, encodeName);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return url;
-    }
 
     public String getXhandName() {
         Document document = Jsoup.parse(response);

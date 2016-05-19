@@ -256,7 +256,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
      */
     private void initURL(String response) {
         HtmlUtils utils = new HtmlUtils(response);
-        cjcxUrl = mainUrl + "/" + utils.encoder(response);
         String xhandName = utils.getXhandName();
         //initUrlData(xhandName);
         String[] split = xhandName.split(" ");
@@ -266,9 +265,9 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         stuName = split[1].replace("同学", "");
         stuNameEncoding = TextEncoderUtils.encoding(stuName);
         //需要的url
-        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
-        kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
-        kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", TextEncoderUtils.encoding(stuName));
+        cjcxUrl = cjcxUrl.replace("stuxh", stuXH).replace("stuname", stuNameEncoding);
+        kbcxUrl = kbcxUrl.replace("stuxh", stuXH).replace("stuname", stuNameEncoding);
+        kscxUrl = kscxUrl.replace("stuxh", stuXH).replace("stuname", stuNameEncoding);
         StuCenterUrl = StuCenterUrl.replace("stuxh", stuXH);
     }
 
