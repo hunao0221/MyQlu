@@ -232,7 +232,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         switch (id) {
             case R.id.add:
-                System.out.println("add crose");
+                startActivity(new Intent(mContext, AddActivity.class));
                 break;
         }
         return super.onOptionsItemSelected(item);

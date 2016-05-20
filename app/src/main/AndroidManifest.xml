@@ -47,7 +47,11 @@
         <activity
             android:name=".activity.ScrollingActivity"
             android:label="@string/title_activity_scrolling"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.AddActivity"
+            android:label="@string/title_activity_add"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

@@ -125,5 +125,6 @@
     </string>
     <string name="title_activity_course_edit">CourseEditActivity</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="title_activity_add">AddActivity</string>
 
 </resources>

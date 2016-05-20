@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.hugo.myqlu.activity.CourseEditActivity">
+    tools:context="com.hugo.myqlu.activity.AddActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -32,23 +32,16 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <FrameLayout
-        android:id="@+id/edit_fragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
+    <include layout="@layout/content_add" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@mipmap/ic_mode_edit_white_24dp"
+        android:src="@mipmap/ic_done_white_24dp"
         app:backgroundTint="#448AFF"
-        app:fab_size="mini"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" />
-</android.support.design.widget.CoordinatorLayout>
 
+</android.support.design.widget.CoordinatorLayout>

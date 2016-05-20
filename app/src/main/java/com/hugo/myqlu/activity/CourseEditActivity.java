@@ -34,7 +34,7 @@ public class CourseEditActivity extends AppCompatActivity {
     CollapsingToolbarLayout toolbarLayout;
     @Bind(R.id.fab)
     FloatingActionButton fab;
-    private Context mComtext = this;
+    private Context mContext = this;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     private FragmentManager fragmentManager;
@@ -120,7 +120,7 @@ public class CourseEditActivity extends AppCompatActivity {
                 //修改成功
                 EventBus.getDefault().post(new UpdateDataEvent(""));
             } else {
-                Toast.makeText(mComtext, "修改失败", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "修改失败", Toast.LENGTH_SHORT).show();
             }
         }
         flag = !flag;
@@ -162,7 +162,7 @@ public class CourseEditActivity extends AppCompatActivity {
     }
 
     private void showDelete() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mComtext);
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setMessage("要删除当前课程吗？");
         builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
@@ -176,6 +176,7 @@ public class CourseEditActivity extends AppCompatActivity {
                 //删除数据
                 courseDao.delete(id);
                 dialog.dismiss();
+                EventBus.getDefault().post(new UpdateDataEvent(""));
                 finish();
             }
         });
