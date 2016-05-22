@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.dao.CourseDao;
 import com.hugo.myqlu.event.UpdateDataEvent;
+import com.hugo.myqlu.utils.WeekUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -76,7 +77,7 @@ public class AddActivity extends AppCompatActivity {
     private void initTime() {
         Calendar calendar = Calendar.getInstance();
         int i = calendar.get(Calendar.DAY_OF_WEEK);
-        tvWeek.setText(setWeek(i + ""));
+        tvWeek.setText(WeekUtils.setWeek(i + ""));
     }
 
 
@@ -114,7 +115,7 @@ public class AddActivity extends AppCompatActivity {
         } else {
             //保存到数据库
             String timeDetail = startTIme + "-" + endTime;
-            boolean add = courseDao.add(courseName, setTime(week), timeDetail, courseTeacher, courseLocation);
+            boolean add = courseDao.add(courseName, WeekUtils.setTime(week), timeDetail, courseTeacher, courseLocation);
             String info;
             if (add)
                 info = "添加成功";
@@ -197,43 +198,5 @@ public class AddActivity extends AppCompatActivity {
                 alertDialog.dismiss();
             }
         });
-    }
-
-    public String setTime(String time) {
-        if (time.equals("周一")) {
-            time = "1";
-        } else if (time.equals("周二")) {
-            time = "2";
-        } else if (time.equals("周三")) {
-            time = "3";
-        } else if (time.equals("周四")) {
-            time = "4";
-        } else if (time.equals("周五")) {
-            time = "5";
-        } else if (time.equals("周六")) {
-            time = "6";
-        } else if (time.equals("周日")) {
-            time = "7";
-        }
-        return time;
-    }
-
-    public String setWeek(String time) {
-        if (time.equals("2")) {
-            time = "周一";
-        } else if (time.equals("3")) {
-            time = "周二";
-        } else if (time.equals("4")) {
-            time = "周三";
-        } else if (time.equals("5")) {
-            time = "周四";
-        } else if (time.equals("6")) {
-            time = "周五";
-        } else if (time.equals("7")) {
-            time = "周六";
-        } else if (time.equals("1")) {
-            time = "周日";
-        }
-        return time;
     }
 }

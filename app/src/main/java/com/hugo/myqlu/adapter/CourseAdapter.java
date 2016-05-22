@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.CourseBean;
+import com.hugo.myqlu.utils.WeekUtils;
 
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         CourseBean courseBean = startList.get(position);
-        String week = setWeek(startList.get(position).getCourseTime());
+        String week = WeekUtils.getWeek(startList.get(position).getCourseTime());
         if (holder instanceof WeekViewHOlder) {
             ((WeekViewHOlder) holder).course_name.setText(courseBean.getCourseName());
             ((WeekViewHOlder) holder).course_info.setText(courseBean.getCourstTimeDetail() + "，" + courseBean.getCourseLocation());
@@ -118,30 +119,4 @@ public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             }
         }
     }
-
-    /**
-     * 获得当前是星期几
-     *
-     * @param time
-     * @return
-     */
-    public String setWeek(String time) {
-        if (time.equals("1")) {
-            time = "周一";
-        } else if (time.equals("2")) {
-            time = "周二";
-        } else if (time.equals("3")) {
-            time = "周三";
-        } else if (time.equals("4")) {
-            time = "周四";
-        } else if (time.equals("5")) {
-            time = "周五";
-        } else if (time.equals("6")) {
-            time = "周六";
-        } else if (time.equals("7")) {
-            time = "周日";
-        }
-        return time;
-    }
-
 }

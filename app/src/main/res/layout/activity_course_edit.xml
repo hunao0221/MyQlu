@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:src="@mipmap/ic_mode_edit_white_24dp"
-        app:backgroundTint="#448AFF"
+        app:backgroundTint="#03A8F3"
         app:fab_size="mini"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" />

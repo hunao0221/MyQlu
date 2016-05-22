@@ -12,6 +12,7 @@ import com.hugo.myqlu.R;
 import com.hugo.myqlu.bean.CourseBean;
 import com.hugo.myqlu.dao.CourseDao;
 import com.hugo.myqlu.event.UpdateDataEvent;
+import com.hugo.myqlu.utils.WeekUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -80,31 +81,12 @@ public class CourseFragment extends Fragment {
 
     private void initUI() {
         name.setText(courseName);
-        week.setText(getWeek(courseTime));
+        week.setText(WeekUtils.getWeek(courseTime));
         location.setText(courseLocation);
         teacher.setText(courseTeacher);
         String[] times = courstTimeDetail.split("-");
         start.setText(times[0]);
         end.setText(times[1]);
-    }
-
-    public String getWeek(String time) {
-        if (time.equals("1")) {
-            time = "周一";
-        } else if (time.equals("2")) {
-            time = "周二";
-        } else if (time.equals("3")) {
-            time = "周三";
-        } else if (time.equals("4")) {
-            time = "周四";
-        } else if (time.equals("5")) {
-            time = "周五";
-        } else if (time.equals("6")) {
-            time = "周六";
-        } else if (time.equals("7")) {
-            time = "周日";
-        }
-        return time;
     }
 
     @Override

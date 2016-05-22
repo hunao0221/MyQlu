@@ -26,8 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:background="@null"
-            android:text="Java Web" />
+            android:background="@null" />
 
     </LinearLayout>
 
@@ -55,7 +54,6 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:clickable="true"
-                android:text="星期一"
                 android:textColor="@color/primary_text"
                 android:textSize="18sp" />
 
@@ -70,7 +68,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="true"
-                    android:text="9:00"
                     android:textColor="@color/primary_text"
                     android:textSize="16sp" />
 
@@ -86,7 +83,6 @@
                     android:id="@+id/end"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10:00"
                     android:textColor="@color/primary_text"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -111,8 +107,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:background="@null"
-            android:text="一号公教楼 -301" />
+            android:background="@null" />
 
     </LinearLayout>
 
@@ -132,8 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
-            android:background="@null"
-            android:text="尹丽红" />
+            android:background="@null" />
 
     </LinearLayout>
 

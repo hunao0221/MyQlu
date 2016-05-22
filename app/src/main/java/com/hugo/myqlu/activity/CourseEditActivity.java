@@ -21,6 +21,7 @@ import com.hugo.myqlu.dao.CourseDao;
 import com.hugo.myqlu.event.UpdateDataEvent;
 import com.hugo.myqlu.fragment.CourseEditFramgment;
 import com.hugo.myqlu.fragment.CourseFragment;
+import com.hugo.myqlu.utils.WeekUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -57,6 +58,9 @@ public class CourseEditActivity extends AppCompatActivity {
         initListener();
     }
 
+    /**
+     * 默认的fragment
+     */
     private void initFragment() {
         CourseFragment courseFragment = new CourseFragment();
         fragmentManager = getSupportFragmentManager();
@@ -82,6 +86,9 @@ public class CourseEditActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 切换fragment，以及保存修改的数据
+     */
     private void initFab() {
         if (flag) {
             toolbarLayout.setTitle("编辑");
@@ -99,7 +106,6 @@ public class CourseEditActivity extends AppCompatActivity {
 
         if (isEditor) {
             //保存更新的数据
-            System.out.println("保存数据");
             View view = editFragment.getView();
             EditText etName = ButterKnife.findById(view, R.id.name);
             String name = etName.getText().toString();
@@ -115,7 +121,7 @@ public class CourseEditActivity extends AppCompatActivity {
             EditText etTeacher = ButterKnife.findById(view, R.id.teacher);
             String teacher = etTeacher.getText().toString();
 
-            boolean update = courseDao.update(id, name, setTime(week), timeDetail, teacher, location);
+            boolean update = courseDao.update(id, name, WeekUtils.setTime(week), timeDetail, teacher, location);
             if (update) {
                 //修改成功
                 EventBus.getDefault().post(new UpdateDataEvent(""));
@@ -126,28 +132,12 @@ public class CourseEditActivity extends AppCompatActivity {
         flag = !flag;
     }
 
-    public String setTime(String time) {
-        if (time.equals("周一")) {
-            time = "1";
-        } else if (time.equals("周二")) {
-            time = "2";
-        } else if (time.equals("周三")) {
-            time = "3";
-        } else if (time.equals("周四")) {
-            time = "4";
-        } else if (time.equals("周五")) {
-            time = "5";
-        } else if (time.equals("周六")) {
-            time = "6";
-        } else if (time.equals("周日")) {
-            time = "7";
-        }
-        return time;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.course_edit_menu, menu);
+        if (flag) {
+            getMenuInflater().inflate(R.menu.course_edit_menu, menu);
+        }
         return true;
     }
 
