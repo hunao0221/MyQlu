@@ -111,8 +111,8 @@ public class ExamActivity extends AppCompatActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             ExamBean examBean = examInfoList.get(position);
             holder.examName.setText(examBean.getExamName());
-            holder.examTime.setText("考试时间 :" + examBean.getExamTime());
-            holder.examLocation.setText("考试地点 :" + examBean.getExamLocation());
+            holder.examTime.setText(getString(R.string.exam_time) + examBean.getExamTime());
+            holder.examLocation.setText(getString(R.string.exam_location) + examBean.getExamLocation());
         }
 
         @Override
@@ -178,13 +178,13 @@ public class ExamActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 //登录成功
-                initKSData();
+                initExamData();
             }
         });
     }
 
     //获得考试
-    private void initKSData() {
+    private void initExamData() {
         OkHttpUtils.get().url(kscxUrl)
                 .addParams("xh", stuXH)
                 .addParams("xm", stuNameEncoding)
@@ -207,10 +207,10 @@ public class ExamActivity extends AppCompatActivity {
                 for (ExamBean examBean : refreshList) {
                     if (examDao.query(examBean.getExamName())) {
                         //更新数据
-                        boolean update = examDao.update(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
+                        examDao.update(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
                     } else {
                         //插入数据库
-                        boolean add = examDao.add(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
+                        examDao.add(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());
                     }
                 }
                 examInfoList = examDao.queryAll();

@@ -39,10 +39,6 @@ public class ExamDao {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query("kaoshiinfo", null, "examname=?", new String[]{name}, null, null, null, null);
         if (cursor.moveToNext()) {
-            String examname = cursor.getString(1);
-            String examtime = cursor.getString(2);
-            String examlocation = cursor.getString(3);
-            System.out.println(examname + "-" + examtime + "-" + examlocation);
             flag = true;
         }
         cursor.close();
@@ -84,6 +80,6 @@ public class ExamDao {
     public void deleteAll() {
         ExamHelper helper = new ExamHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
-        int kaoshi = db.delete("kaoshiinfo", null, null);
+        db.delete("kaoshiinfo", null, null);
     }
 }

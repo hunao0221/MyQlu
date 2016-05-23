@@ -138,5 +138,7 @@
     <string name="edit_teacher">老师</string>
     <string name="card_null_consumption">当前饭卡还没有消费(=^_^=)</string>
     <string name="title_couse">课程</string>
+    <string name="exam_time">考试时间 :</string>
+    <string name="exam_location">考试地点 :</string>
 
 </resources>
