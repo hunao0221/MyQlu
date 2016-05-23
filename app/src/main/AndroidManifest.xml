@@ -36,17 +36,8 @@
             android:name=".activity.SettingActivity"
             android:label="设置" />
         <activity
-            android:name=".activity.CourseInfoActivity"
-            android:label="@string/title_activity_course_info"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CourseEditActivity" />
-        <activity
             android:name=".activity.CourseEditActivity"
             android:label="@string/title_activity_course_edit"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".activity.ScrollingActivity"
-            android:label="@string/title_activity_scrolling"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activity.AddActivity"

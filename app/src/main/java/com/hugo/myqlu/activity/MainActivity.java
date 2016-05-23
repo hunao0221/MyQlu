@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("课程");
+        toolbar.setTitle(R.string.title_couse);
         setSupportActionBar(toolbar);
         EventBus.getDefault().register(this);
         initData();

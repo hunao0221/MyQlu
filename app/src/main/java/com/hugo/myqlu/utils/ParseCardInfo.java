@@ -17,7 +17,7 @@ public class ParseCardInfo {
         Document document = Jsoup.parse(response);
         Elements divs = document.select("div");
         Map<String, String> infoMap = new HashMap<>();
-        String name = divs.get(2).text();
+        String name =  divs.get(2).text();
         infoMap.put("name", name);
         String cardId = divs.get(4).text();
         infoMap.put("cardId", cardId);

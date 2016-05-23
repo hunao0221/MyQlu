@@ -205,7 +205,6 @@ public class SchoolCardActivity extends AppCompatActivity {
                     public void onError(Call call, Exception e) {
                         //应该给验证码设置一个图片
                         //不在校园网环境
-                        System.out.println("验证码无法加载");
                         if (tv_error.getVisibility() == View.INVISIBLE) {
                             tv_error.setVisibility(View.VISIBLE);
                         }
@@ -824,8 +823,7 @@ public class SchoolCardActivity extends AppCompatActivity {
 
     public int getDate() {
         Calendar calendar = Calendar.getInstance();
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        return day;
+        return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
     //退出
@@ -846,11 +844,10 @@ public class SchoolCardActivity extends AppCompatActivity {
      */
     private DialogInterface.OnKeyListener keylistener = new DialogInterface.OnKeyListener() {
         public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
                 return true;
-            } else {
+            else
                 return false;
-            }
         }
     };
 }

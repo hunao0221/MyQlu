@@ -178,7 +178,6 @@ public class ExamActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 //登录成功
-                System.out.println("登录成功");
                 initKSData();
             }
         });
@@ -206,7 +205,6 @@ public class ExamActivity extends AppCompatActivity {
                 //解析html，得到考试信息，保存到数据库
                 refreshList = ParseExam.parse(response);
                 for (ExamBean examBean : refreshList) {
-                    System.out.println(examBean.getExamName());
                     if (examDao.query(examBean.getExamName())) {
                         //更新数据
                         boolean update = examDao.update(examBean.getExamName(), examBean.getExamTime(), examBean.getExamLocation());

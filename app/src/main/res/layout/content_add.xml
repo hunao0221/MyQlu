@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:background="@null"
-                android:hint="课程名(高数)" />
+                android:hint="@string/edit_name" />
 
         </LinearLayout>
 
@@ -58,7 +58,6 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:clickable="true"
-                    android:text="星期一"
                     android:textColor="@color/primary_text"
                     android:textSize="18sp" />
 
@@ -73,7 +72,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="true"
-                        android:text="9:00"
                         android:textColor="@color/primary_text"
                         android:textSize="16sp" />
 
@@ -89,7 +87,6 @@
                         android:id="@+id/end"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="10:00"
                         android:textColor="@color/primary_text"
                         android:textSize="16sp" />
                 </LinearLayout>
@@ -115,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:background="@null"
-                android:hint="上课地点" />
+                android:hint="@string/edit_location" />
 
         </LinearLayout>
 
@@ -136,7 +133,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:background="@null"
-                android:hint="老师" />
+                android:hint="@string/edit_teacher" />
 
         </LinearLayout>
     </LinearLayout>

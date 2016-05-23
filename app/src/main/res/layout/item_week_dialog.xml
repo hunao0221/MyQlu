@@ -9,6 +9,5 @@
         android:id="@+id/tv_item_week"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="星期一"
         android:textSize="16sp" />
 </RelativeLayout>

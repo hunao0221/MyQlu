@@ -271,7 +271,7 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
         if (selectMode == null) {
             return;
         }
-        if (selectMode == BUTTON_XQ) {
+        if (selectMode.equals(BUTTON_XQ)) {
             //按学期查询
             if (ddlXQ.equals("") || ddlXN.equals("")) {
                 return;

@@ -6,6 +6,6 @@
         android:id="@+id/add"
         android:icon="@mipmap/ic_add_white_24dp"
         android:orderInCategory="20"
-        android:title="添加"
+        android:title="@string/add_course"
         app:showAsAction="ifRoom" />
 </menu>

@@ -126,5 +126,17 @@
     <string name="title_activity_course_edit">CourseEditActivity</string>
     <string name="title_activity_scrolling">ScrollingActivity</string>
     <string name="title_activity_add">AddActivity</string>
+    <string name="add_course">添加</string>
+    <string name="query_score">成绩查询</string>
+    <string name="query_exam">考试查询</string>
+    <string name="school_card">一卡通</string>
+    <string name="nav_settings">设置</string>
+    <string name="nav_logout">注销</string>
+    <string name="nav_share">分享</string>
+    <string name="edit_name">课程名(高数)</string>
+    <string name="edit_location">上课地点</string>
+    <string name="edit_teacher">老师</string>
+    <string name="card_null_consumption">当前饭卡还没有消费(=^_^=)</string>
+    <string name="title_couse">课程</string>
 
 </resources>

@@ -5,27 +5,27 @@
         <item
             android:id="@+id/nav_score"
             android:icon="@mipmap/ic_view_quilt_black_24dp"
-            android:title="成绩查询" />
+            android:title="@string/query_score" />
         <item
             android:id="@+id/nav_exam"
             android:icon="@mipmap/ic_pageview_black_24dp"
-            android:title="考试查询" />
+            android:title="@string/query_exam" />
         <item
             android:id="@+id/nav_school_card"
             android:icon="@mipmap/ic_account_balance_wallet_black_24dp"
-            android:title="一卡通" />
+            android:title="@string/school_card" />
         <item
             android:id="@+id/nav_settings"
             android:icon="@mipmap/ic_settings_black_24dp"
-            android:title="设置" />
+            android:title="@string/nav_settings" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@mipmap/ic_supervisor_account_black_24dp"
-            android:title="注销" />
+            android:title="@string/nav_logout" />
         <item
             android:id="@+id/nav_share"
             android:icon="@mipmap/ic_share_black_24dp"
-            android:title="分享" />
+            android:title="@string/nav_share" />
 
     </group>
 

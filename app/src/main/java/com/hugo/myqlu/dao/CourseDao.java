@@ -17,6 +17,7 @@ import java.util.List;
  */
 public class CourseDao {
     private Context mContext;
+    private CourseBean course;
 
     public CourseDao(Context mContext) {
         this.mContext = mContext;
@@ -80,16 +81,17 @@ public class CourseDao {
         SQLiteDatabase db = helper.getReadableDatabase();
         Cursor cursor = db.query("course", null, "_id=?", new String[]{id}, null, null, null);
         if (cursor.moveToNext()) {
-            CourseBean course = new CourseBean();
+            course = new CourseBean();
             course.setId(cursor.getInt(0));
             course.setCourseName(cursor.getString(1));
             course.setCourseTime(cursor.getString(2));
             course.setCourstTimeDetail(cursor.getString(3));
             course.setCourseTeacher(cursor.getString(4));
             course.setCourseLocation(cursor.getString(5));
-            return course;
         }
-        return null;
+        cursor.close();
+        db.close();
+        return course;
     }
 
     public boolean update(String id, String name, String time, String timeDetail, String teacher, String location) {

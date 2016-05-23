@@ -211,7 +211,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                     @Override
                     public void onResponse(String response) {
                         View focusView = null;
-                        System.out.println("onResponse");
                         if (response.contains("验证码不正确")) {
                             etCode.setError("验证码错误");
                             focusView = etCode;
@@ -232,7 +231,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             pbLogin.setVisibility(View.INVISIBLE);
                             //初始化用户数据
 //                            initURL(response);
-                            System.out.println("登录成功");
                             showSaveDataDialog(response);
                         }
                     }
@@ -402,7 +400,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         //数据保存成功
         if (saveSucess) {
-            System.out.println("saveSucess");
             sp.edit().putBoolean("isFirstIn", false).commit();
             allCourseList = null;
             startActivity(new Intent(mContext, MainActivity.class));

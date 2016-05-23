@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="124dp"
-            android:text="当前饭卡还没有消费(=^_^=)"
+            android:text="@string/card_null_consumption"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone" />
 
