@@ -370,10 +370,10 @@ public class ScoreActivity extends AppCompatActivity implements AdapterView.OnIt
             View view;
             ViewHolder holder;
             if (convertView == null) {
-                view = View.inflate(mContext, R.layout.item_cj, null);
+                view = View.inflate(mContext, R.layout.item_score, null);
                 holder = new ViewHolder();
-                holder.tvCourse = ButterKnife.findById(view, R.id.tv_kecheng);
-                holder.tvScore = ButterKnife.findById(view, R.id.tv_chengji);
+                holder.tvCourse = ButterKnife.findById(view, R.id.tv_course);
+                holder.tvScore = ButterKnife.findById(view, R.id.tv_score);
                 view.setTag(holder);
             } else {
                 view = convertView;

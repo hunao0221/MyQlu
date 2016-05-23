@@ -9,7 +9,7 @@
     android:paddingTop="14dp">
 
     <TextView
-        android:id="@+id/tv_kecheng"
+        android:id="@+id/tv_course"
         android:layout_width="match_parent"
         android:layout_height="25dp"
         android:layout_weight="11"
@@ -19,7 +19,7 @@
         android:singleLine="true" />
 
     <TextView
-        android:id="@+id/tv_chengji"
+        android:id="@+id/tv_score"
         android:layout_width="wrap_content"
         android:layout_height="25dp" />
 </LinearLayout>

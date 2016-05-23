@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -66,8 +65,6 @@ public class SchoolCardActivity extends AppCompatActivity {
     TextView tvYuer;
     @Bind(R.id.tv_null_data)
     TextView tvNullData;
-    @Bind(R.id.root_view)
-    CoordinatorLayout rootView;
     @Bind(R.id.tv_date)
     TextView tvDate;
     @Bind(R.id.fab)

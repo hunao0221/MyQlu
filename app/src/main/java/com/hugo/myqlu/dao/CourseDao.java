@@ -42,6 +42,7 @@ public class CourseDao {
         List<CourseBean> dayCoueseList = new ArrayList<>();
         while (cursor.moveToNext()) {
             CourseBean course = new CourseBean();
+            course.setId(cursor.getInt(0));
             course.setCourseName(cursor.getString(1));
             course.setCourseTime(cursor.getString(2));
             course.setCourstTimeDetail(cursor.getString(3));
@@ -61,6 +62,7 @@ public class CourseDao {
         List<CourseBean> allCourseList = new ArrayList<>();
         while (cursor.moveToNext()) {
             CourseBean course = new CourseBean();
+            course.setId(cursor.getInt(0));
             course.setCourseName(cursor.getString(1));
             course.setCourseTime(cursor.getString(2));
             course.setCourstTimeDetail(cursor.getString(3));
@@ -73,6 +75,36 @@ public class CourseDao {
         return allCourseList;
     }
 
+    public CourseBean queryById(String id) {
+        CourseHelper helper = new CourseHelper(mContext, 1);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        Cursor cursor = db.query("course", null, "_id=?", new String[]{id}, null, null, null);
+        if (cursor.moveToNext()) {
+            CourseBean course = new CourseBean();
+            course.setId(cursor.getInt(0));
+            course.setCourseName(cursor.getString(1));
+            course.setCourseTime(cursor.getString(2));
+            course.setCourstTimeDetail(cursor.getString(3));
+            course.setCourseTeacher(cursor.getString(4));
+            course.setCourseLocation(cursor.getString(5));
+            return course;
+        }
+        return null;
+    }
+
+    public boolean update(String id, String name, String time, String timeDetail, String teacher, String location) {
+        CourseHelper helper = new CourseHelper(mContext, 1);
+        SQLiteDatabase db = helper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("time", time);
+        values.put("timedetail", timeDetail);
+        values.put("teacher", teacher);
+        values.put("location", location);
+        int course = db.update("course", values, "_id=?", new String[]{id});
+        return course == 1;
+    }
+
     public boolean deleteAll() {
         CourseHelper helper = new CourseHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -81,10 +113,10 @@ public class CourseDao {
         return delete != 0;
     }
 
-    public boolean delete(String name, String time) {
+    public boolean delete(String id) {
         CourseHelper helper = new CourseHelper(mContext, 1);
         SQLiteDatabase db = helper.getWritableDatabase();
-        int delete = db.delete("course", "name=? and time=?", new String[]{name, time});
+        int delete = db.delete("course", "_id=?", new String[]{id});
         db.close();
         return delete != 0;
     }
