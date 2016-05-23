@@ -1,3 +1,5 @@
+/app/proguard-rules.pro
+/settings.gradle
 /gradle.properties
 *.iml
 .gradle
