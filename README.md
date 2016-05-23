@@ -26,7 +26,7 @@
 
 ##下载：
 ####1.3.0
-> - http://pan.baidu.com/s/1bp5GeAF
+> - http://pan.baidu.com/s/1o8Bzrsu
 > - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.3.0.apk>
 
 ####1.2.0
