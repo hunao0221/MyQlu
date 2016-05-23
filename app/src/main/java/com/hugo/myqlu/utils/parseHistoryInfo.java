@@ -18,15 +18,13 @@ public class ParseHistoryInfo {
     public static String getMainAction(String response) {
         Document document = Jsoup.parse(response);
         Element from = document.getElementById("accounthisTrjn");
-        String action = from.attr("action");
-        return action;
+        return from.attr("action");
     }
 
     public static String getQueryAction(String response) {
         Document document = Jsoup.parse(response);
         Element from = document.getElementById("accounthisTrjn");
-        String action = from.attr("action");
-        return action;
+        return from.attr("action");
     }
 
     public static List<String> getDayList(String response) {
@@ -41,8 +39,7 @@ public class ParseHistoryInfo {
 
     public static String getLastAction(String response) {
         Document document = Jsoup.parse(response);
-        String lastAction = document.select("form").attr("action");
-        return lastAction;
+        return document.select("form").attr("action");
     }
 
     public static String getHistoryTotal(String response) {
@@ -93,7 +90,6 @@ public class ParseHistoryInfo {
         Element lastTr = trs.get(trs.size() - 1);
         String text = lastTr.text();
         text = text.replaceAll("\\s", "");
-        System.out.println(text);
         String pages = text.substring(text.indexOf("（元）") + 4, text.indexOf("页"));
         return Integer.parseInt(pages);
     }

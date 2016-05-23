@@ -9,7 +9,11 @@
 - 一卡通一键挂失
 
 ##更新：
-####2016/05/08 MyQlu1.2.0
+####2016/05/23 MyQlu1.3.0
+>1.自定义课程信息
+>2.增删课程
+
+####2016/05/11 MyQlu1.2.0
 > 1.全新的一卡通UI  
 > 2.新增一卡通本月内消费查询  
 > 3.更快的成绩查询  
@@ -21,6 +25,10 @@
 > 3.优化UI细节
 
 ##下载：
+####1.3.0
+> - http://pan.baidu.com/s/1bp5GeAF
+> - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.3.0.apk>
+
 ####1.2.0
 > - http://pan.baidu.com/s/1i4VB3UH
 > - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.2.0.apk>
@@ -35,8 +43,8 @@
 
 
 ## 应用截图
-![主页](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-52-04.png)
-![侧边栏](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-51-42.png)
+![主页](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.3.0/enframe_2016-05-23-10-03-45.png)
+![侧边栏](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.3.0/enframe_2016-05-23-10-03-57.png)
 ![成绩查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-47-22.png)
 ![考试查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.0.2/enframe_2016-05-08-10-57-09.png)
 ![流水查询](https://raw.githubusercontent.com/hunao0221/Res/master/photos/myqlu1.2.0/enframe_2016-05-12-14-12-38.png)
@@ -48,6 +56,8 @@
 - [**JakeWharton/butterknife**](https://github.com/JakeWharton/butterknife)
 - [**jhy/jsoup**](https://github.com/jhy/jsoup)
 - [**google/gson**](https://github.com/google/gson)
+- [**greenrobot/EventBus**](https://github.com/greenrobot/EventBus)
+- [Clans/FloatingActionButton](https://github.com/Clans/FloatingActionButton)
 
 ## 声明：
 本程序数据全部从学校教学管理系统和一卡通建设爬取，您的个人信息（学号,密码,一卡通账号，密码）**不会**上传到我的个人服务器！本应用仅用作分享和学习，[**源代码在源代码在 GPL v3 协议下发布**](https://github.com/hunao0221/MyQlu/blob/master/LICENSE.txt)，使用前，请确保你了解此协议；应用中部分图片均搜集自互联网，若内容有侵权请联系作者进行删除处理。
