@@ -72,6 +72,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="true"
+                        android:text="09:00"
                         android:textColor="@color/primary_text"
                         android:textSize="16sp" />
 
@@ -87,6 +88,7 @@
                         android:id="@+id/end"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="10:00"
                         android:textColor="@color/primary_text"
                         android:textSize="16sp" />
                 </LinearLayout>
