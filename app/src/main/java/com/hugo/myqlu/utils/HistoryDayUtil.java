@@ -6,7 +6,7 @@ import java.util.Calendar;
 /**
  * 获得查询历史消费的起始日期
  *
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/5 14:31.
  */
 

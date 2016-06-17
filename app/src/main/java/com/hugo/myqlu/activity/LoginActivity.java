@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -294,18 +293,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public void onError(Call call, Exception e) {
-                        waitDialog.dismiss();
-                        Snackbar.make(rootView, "未知错误，重启APP", Snackbar.LENGTH_LONG).setAction("重启", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //重新启动app
-                                Intent i = getBaseContext().getPackageManager()
-                                        .getLaunchIntentForPackage(getBaseContext().getPackageName());
-                                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                startActivity(i);
-                            }
-                        }).show();
-
+                        Toast.makeText(mContext, "课表获取失败", Toast.LENGTH_SHORT).show();
+                        initKSData();
                     }
 
                     @Override
@@ -335,6 +324,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             @Override
             public void onError(Call call, Exception e) {
                 //失败
+                saveDataToDB();
             }
 
             @Override
@@ -369,35 +359,38 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         //课表
         CourseDao courseDao = new CourseDao(mContext);
         boolean saveSucess = true;
-        for (CourseBean course : allCourseList) {
-            String courseName = course.getCourseName();
-            String courseTime = course.getCourseTime();
-            String courstTimeDetail = course.getCourstTimeDetail();
-            String courseTeacher = course.getCourseTeacher();
-            String courseLocation = course.getCourseLocation();
-            boolean isSucess = courseDao.add(courseName, courseTime, courstTimeDetail, courseTeacher, courseLocation);
-            if (!isSucess) {
-                saveSucess = false;
-                Toast.makeText(mContext, "保存课表失败", Toast.LENGTH_SHORT).show();
-                break;
+        if (allCourseList != null) {
+
+            for (CourseBean course : allCourseList) {
+                String courseName = course.getCourseName();
+                String courseTime = course.getCourseTime();
+                String courstTimeDetail = course.getCourstTimeDetail();
+                String courseTeacher = course.getCourseTeacher();
+                String courseLocation = course.getCourseLocation();
+                boolean isSucess = courseDao.add(courseName, courseTime, courstTimeDetail, courseTeacher, courseLocation);
+                if (!isSucess) {
+                    saveSucess = false;
+                    Toast.makeText(mContext, "保存课表失败", Toast.LENGTH_SHORT).show();
+                    break;
+                }
             }
         }
-
         //保存考试信息
         ExamDao examDao = new ExamDao(mContext);
-        for (ExamBean exam : ksInfoList) {
-            String examName = exam.getExamName();
-            String examTime = exam.getExamTime();
-            String examLocation = exam.getExamLocation();
-            boolean addSuccess = examDao.add(examName, examTime, examLocation);
-            if (!addSuccess) {
-                waitDialog.dismiss();
-                saveSucess = false;
-                Toast.makeText(mContext, "保存考试信息失败", Toast.LENGTH_SHORT).show();
-                break;
+        if (ksInfoList != null) {
+            for (ExamBean exam : ksInfoList) {
+                String examName = exam.getExamName();
+                String examTime = exam.getExamTime();
+                String examLocation = exam.getExamLocation();
+                boolean addSuccess = examDao.add(examName, examTime, examLocation);
+                if (!addSuccess) {
+                    waitDialog.dismiss();
+                    saveSucess = false;
+                    Toast.makeText(mContext, "保存考试信息失败", Toast.LENGTH_SHORT).show();
+                    break;
+                }
             }
         }
-
         //数据保存成功
         if (saveSucess) {
             sp.edit().putBoolean("isFirstIn", false).commit();

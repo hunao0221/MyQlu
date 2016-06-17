@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/28 21:10.
  */
 public class ParseCardInfo {

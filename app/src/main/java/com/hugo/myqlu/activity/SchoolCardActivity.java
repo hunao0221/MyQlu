@@ -28,6 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.flyco.systembar.SystemBarHelper;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 import com.hugo.myqlu.R;
@@ -99,7 +100,7 @@ public class SchoolCardActivity extends AppCompatActivity {
 
     private String host = "http://210.44.159.5";
     //等待页面
-    private String waitUrl = "http://210.44.159.5/accounthisTrjn.action";
+    private String waitUrl = "http://210.44.159.5/accounthisTrjn2.action";
     //流水下一页
     private String nextPageUrl = "http://210.44.159.5/accountconsubBrows.action";
 
@@ -154,6 +155,7 @@ public class SchoolCardActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         toolbar.setTitle("一卡通");
         setSupportActionBar(toolbar);
+        SystemBarHelper.tintStatusBar(this, getResources().getColor(R.color.colorPrimary));
         initVIew();
         initData();
         showLoginDialog();
@@ -602,6 +604,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                 }
                 nextPage = 1;
                 //查询历史消费
+                historyInfo();
                 queryHistoryMustInfo();
             }
         });
@@ -657,13 +660,12 @@ public class SchoolCardActivity extends AppCompatActivity {
      * 获得等待页面的action
      */
     private void queryHistoryMustInfo() {
-        String cotinue = queryAction.substring(queryAction.indexOf("=") + 1, queryAction.length()).trim();
         OkHttpUtils.post().url(host + queryAction)
                 .addHeader("Host", "210.44.159.5")
                 .addHeader("Referer", host + mainAction)
                 .addParams("inputStartDate", inputStartDate)
                 .addParams("inputEndDate", inputEndDate)
-                .addParams("__continue", cotinue)
+                // .addParams("__continue", cotinue)
                 .build()
                 .execute(new StringCallback() {
 
@@ -684,10 +686,9 @@ public class SchoolCardActivity extends AppCompatActivity {
      * 利用等待页面获取的action查询历史消费信息
      */
     private void queryHistoryConsumption() {
-        OkHttpUtils.post().url(waitUrl + lastAction)
+        OkHttpUtils.post().url("http://210.44.159.5/accounthisTrjn3.action")
                 .addHeader("Host", "210.44.159.5")
-                .addHeader("Referer", "waitUrl+lastAction")
-                .addParams("__continue", lastAction.substring(lastAction.indexOf("=") + 1, lastAction.length()).trim())
+                .addHeader("Referer", "http://210.44.159.5/accounthisTrjn2.action")
                 .build()
                 .execute(new StringCallback() {
                     @Override

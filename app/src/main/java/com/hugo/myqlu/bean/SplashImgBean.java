@@ -1,7 +1,7 @@
 package com.hugo.myqlu.bean;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/23 22:27.
  */
 public class SplashImgBean {

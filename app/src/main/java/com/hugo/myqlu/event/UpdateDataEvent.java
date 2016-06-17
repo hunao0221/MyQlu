@@ -1,7 +1,7 @@
 package com.hugo.myqlu.event;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/19 19:02.
  */
 public class UpdateDataEvent {

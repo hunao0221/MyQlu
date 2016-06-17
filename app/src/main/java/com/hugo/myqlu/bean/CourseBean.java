@@ -1,7 +1,7 @@
 package com.hugo.myqlu.bean;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/24 9:50.
  */
 public class CourseBean {

@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 解析课表，保存到List中
  *
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/23 8:56.
  */
 public class ParseCourses {

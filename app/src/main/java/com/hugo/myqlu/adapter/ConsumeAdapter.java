@@ -18,7 +18,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/12 13:09.
  */
 public class ConsumeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -126,20 +126,22 @@ public class ConsumeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
      */
     public int getTypeImage(String terminal, String time) {
         int drawableId = 0;
-        if (terminal.equals("长清水控浴室")) {
+        if (terminal.contains("浴室")) {
             drawableId = R.mipmap.xizao;
-        } else if (terminal.equals("三餐商务")) {
+        } else if (terminal.contains("食堂")) {
             drawableId = compareTime(time);
-        } else if (terminal.equals("一餐商务")) {
-            drawableId = compareTime(time);
-        } else if (terminal.equals("医疗子系统")) {
+        } else if (terminal.contains("校医院")) {
             drawableId = R.mipmap.yaopinfei;
         } else if (terminal.equals("生活区商务子系统")) {
             drawableId = compareTime(time);
-        } else if (terminal.equals("直饮水")) {
+        } else if (terminal.contains("直饮水")) {
             drawableId = R.mipmap.shuifei;
-        } else if (terminal.equals("软网关系统")) {
+        } else if (terminal.contains("纳博士")) {
             drawableId = R.mipmap.icon_zhichu_type_gouwu;
+        } else if (terminal.contains("直通车")) {
+            drawableId = R.mipmap.gonggongqiche;
+        } else if (terminal.contains("开水房")) {
+            drawableId = R.mipmap.shuifei;
         } else {
             drawableId = R.mipmap.icon_zhichu_type_yanjiuyinliao;
         }

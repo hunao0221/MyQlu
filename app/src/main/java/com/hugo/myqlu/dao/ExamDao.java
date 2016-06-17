@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/28 13:23.
  */
 public class ExamDao {

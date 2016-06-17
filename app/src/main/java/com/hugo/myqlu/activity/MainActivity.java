@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.flyco.systembar.SystemBarHelper;
 import com.hugo.myqlu.R;
 import com.hugo.myqlu.adapter.CourseAdapter;
 import com.hugo.myqlu.bean.CourseBean;
@@ -48,6 +50,10 @@ public class MainActivity extends AppCompatActivity
     RecyclerView couseList;
     @Bind(R.id.tv_null_course)
     TextView tvNullCourse;
+    @Bind(R.id.drawer_layout)
+    DrawerLayout drawerLayout;
+    @Bind(R.id.nav_view)
+    NavigationView navView;
 
     private Toolbar toolbar;
     private Context mContext = this;
@@ -70,6 +76,11 @@ public class MainActivity extends AppCompatActivity
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.title_couse);
         setSupportActionBar(toolbar);
+
+        int color = getResources().getColor(R.color.colorPrimary);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT)
+            SystemBarHelper.tintStatusBar(this, color);
+        SystemBarHelper.tintStatusBarForDrawer(this, drawerLayout, color);
         EventBus.getDefault().register(this);
         initData();
         initView();

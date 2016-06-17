@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/28 22:00.
  */
 public class ParseLiushui {
@@ -36,9 +36,9 @@ public class ParseLiushui {
             //交易终端
             zhangBean.setTerminal(tr.child(4).text().trim());
             //交易额
-            zhangBean.setTurnover(tr.child(6).text().trim());
+            zhangBean.setTurnover(tr.child(5).text().trim());
             //现有余额
-            zhangBean.setBalance(tr.child(7).text().trim());
+            zhangBean.setBalance(tr.child(6).text().trim());
             zhangList.add(zhangBean);
         }
         return zhangList;

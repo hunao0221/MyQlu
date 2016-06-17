@@ -1,7 +1,7 @@
 package com.hugo.myqlu.utils;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/22 10:19.
  */
 public class WeekUtils {

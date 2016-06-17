@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/24 0:16.
  */
 public class BaseInfoDao {

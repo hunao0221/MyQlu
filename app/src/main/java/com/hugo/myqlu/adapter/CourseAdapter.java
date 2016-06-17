@@ -16,7 +16,7 @@ import java.util.List;
 import butterknife.ButterKnife;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/12 10:46.
  */
 public class CourseAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {

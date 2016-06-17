@@ -1,7 +1,7 @@
 package com.hugo.myqlu.bean;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/17 21:58.
  */
 public class VersionBean {

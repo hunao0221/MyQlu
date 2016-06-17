@@ -9,35 +9,41 @@
 - 一卡通一键挂失
 
 ##更新：
-####2016/05/23 MyQlu1.3.0
+#### 2016/06/17 MyQlu1.3.1
+> 紧急更新
+
+#### 2016/05/23 MyQlu1.3.0
 >1.自定义课程信息
 >2.增删课程
 
-####2016/05/11 MyQlu1.2.0
+#### 2016/05/11 MyQlu1.2.0
 > 1.全新的一卡通UI  
 > 2.新增一卡通本月内消费查询  
 > 3.更快的成绩查询  
 > 4.修复部分专业同学登录闪退的bug
 
-####2016/05/08 MyQlu1.0.2
+#### 2016/05/08 MyQlu1.0.2
 > 1.新增一卡通消费历史查询  
 > 2.考试查询下拉刷新  
 > 3.优化UI细节
 
-##下载：
-####1.3.0
+## 下载：
+#### 1.3.1
+> - <http://pan.baidu.com/s/1nv0DnGd>
+
+#### 1.3.0
 > - http://pan.baidu.com/s/1o8Bzrsu
 > - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.3.0.apk>
 
-####1.2.0
+#### 1.2.0
 > - http://pan.baidu.com/s/1i4VB3UH
 > - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.2.0.apk>
 
-####1.0.2
+#### 1.0.2
 >- <http://pan.baidu.com/s/1kV8MRx9>
 - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.0.2.apk>
 
-####1.0.1
+#### 1.0.1
 >- <http://pan.baidu.com/s/1dFNSlFV>
 - <https://github.com/hunao0221/Res/raw/master/apk/myqlu1.0.1.apk>
 

@@ -12,7 +12,7 @@ import android.view.View;
 /**
  * RecylerVIew分割线
  *
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/9 19:17.
  */
 

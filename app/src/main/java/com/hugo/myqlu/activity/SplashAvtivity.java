@@ -41,7 +41,7 @@ import okhttp3.Call;
 public class SplashAvtivity extends AppCompatActivity {
     @Bind(R.id.tv_version)
     TextView tv_version;
-    private String updateUrl = "http://hunao0221.github.io/myqluupdate.json";
+    private String updateUrl = "https://raw.githubusercontent.com/hunao0221/Res/master/myqluupdate.json";
     private Context mContext = this;
     private boolean isFirstIn;
     private String mVersionName;

@@ -11,25 +11,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/5/4 20:06.
  */
 public class ParseHistoryInfo {
     public static String getMainAction(String response) {
         Document document = Jsoup.parse(response);
-        Element from = document.getElementById("accounthisTrjn");
+        Element from = document.getElementById("accounthisTrjn1");
         return from.attr("action");
     }
 
     public static String getQueryAction(String response) {
         Document document = Jsoup.parse(response);
-        Element from = document.getElementById("accounthisTrjn");
+        Element from = document.getElementById("accounthisTrjn2");
         return from.attr("action");
     }
 
     public static List<String> getDayList(String response) {
         Document document = Jsoup.parse(response);
         Elements as = document.select("a");
+
         List<String> dayList = new ArrayList<>();
         for (Element a : as) {
             dayList.add(a.text().trim());

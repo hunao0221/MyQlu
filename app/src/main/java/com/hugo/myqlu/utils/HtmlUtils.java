@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 对url中的中文编码
  *
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/21 12:01.
  */
 

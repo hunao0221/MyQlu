@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 /**
  * 获取SharedPreferences
  *
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/22 19:23.
  */
 public class SpUtil {

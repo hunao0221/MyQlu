@@ -4,7 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
- * @auther Hugo
+ * @author Hugo
  * Created on 2016/4/22 23:10.
  */
 public class TextEncoderUtils {
