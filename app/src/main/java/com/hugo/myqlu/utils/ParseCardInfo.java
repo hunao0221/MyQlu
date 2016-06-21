@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * 解析一卡通基本信息
  * @author Hugo
  * Created on 2016/4/28 21:10.
  */

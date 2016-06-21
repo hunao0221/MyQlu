@@ -280,7 +280,7 @@ public class SchoolCardActivity extends AppCompatActivity {
                             pbLogin.setVisibility(View.GONE);
                         }
                         View focusView = null;
-                        if (response.contains("验证码不正确")) {
+                        if (response.contains("验证码错误")) {
                             etCode.setError("验证码错误");
                             focusView = etCode;
                         } else if (response.contains("密码错误")) {
